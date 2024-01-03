@@ -1,18 +1,72 @@
+/**
+ * @file    main.cpp
+ * @author  Jose Miguel Rios Rubio <jrios.github@gmail.com>
+ * @date    03-01-2024
+ * @version 1.0.0
+ *
+ * @section DESCRIPTION
+ *
+ * Main source file of the ESPMULTILOG project.
+ *
+ * @section LICENSE
+ *
+ * MIT License
+ *
+ * Copyright (c) 2023 Jose Miguel Rios Rubio
+ *
+ * Permission is hereby granted, free of charge, to any person obtaining a
+ * copy of this software and associated documentation files (the "Software"),
+ * to deal in the Software without restriction, including without limitation
+ * the rights to use, copy, modify, merge, publish, distribute, sublicense,
+ * and/or sell copies of the Software, and to permit persons to whom the
+ * Software is furnished to do so, subject to the following conditions:
+ *
+ * The above copyright notice and this permission notice shall be included in
+ * all copies or substantial portions of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
+ * FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
+ * DEALINGS IN THE SOFTWARE.
+ */
+
+/*****************************************************************************/
+
+/* Libraries */
+
+// Arduino Framework
 #include <Arduino.h>
 
-// put function declarations here:
-int myFunction(int, int);
+/*****************************************************************************/
 
-void setup() {
-  // put your setup code here, to run once:
-  int result = myFunction(2, 3);
+/* In-Scope Function Prototypes */
+
+static void wifi_setup();
+
+/*****************************************************************************/
+
+/* Setup & Loop Functions */
+
+void setup()
+{
+    wifi_setup();
 }
 
-void loop() {
-  // put your main code here, to run repeatedly:
+void loop()
+{
+    // TODO
 }
 
-// put function definitions here:
-int myFunction(int x, int y) {
-  return x + y;
+/*****************************************************************************/
+
+/* In-Scope Functions */
+
+static void wifi_setup()
+{
+    // TODO
 }
+
+/*****************************************************************************/
