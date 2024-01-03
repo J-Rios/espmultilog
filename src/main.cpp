@@ -43,6 +43,12 @@
 // Constant Data
 #include "constants.h"
 
+// Network State Library
+#include "network_interface.h"
+
+// WiFi Commissioning Portal
+#include "wifi_commissioning.h"
+
 /*****************************************************************************/
 
 /* In-Scope Function Prototypes */
@@ -69,7 +75,14 @@ void setup()
 
 void loop()
 {
-    // TODO
+    // Run Standard Managers
+    WifiCommissioning.process();
+
+    // Run WiFi Connection Required Managers
+    if (Network.available())
+    {
+        //MQTT.process();
+    }
 }
 
 /*****************************************************************************/
@@ -83,6 +96,7 @@ void loop()
 static void serial_debug_setup()
 {
     Serial.begin(ns_const::DEFAULT_UART_BAUD_RATE);
+
     Serial.printf("%s (v%d.%d.%d)\n",
         ns_const::PROJECT_NAME,
         (int)(ns_const::FW_APP_VERSION_X),
@@ -90,9 +104,16 @@ static void serial_debug_setup()
         (int)(ns_const::FW_APP_VERSION_Z));
 }
 
+/**
+ * @details This function initializes the Network component to start tracking
+ * network events changes. Then it initializes the WiFi Manager component and
+ * request to try WiFi connection to the system configured WiFi Station.
+ */
 static void wifi_setup()
 {
-    // TODO
+    Network.init();
+    WifiCommissioning.init();
+    WifiCommissioning.connect();
 }
 
 /*****************************************************************************/
