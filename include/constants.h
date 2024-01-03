@@ -20,14 +20,35 @@
 
 namespace ns_const
 {
-    // Maximum number of characters for WiFi SSID
+    /**
+     * @brief Maximum number of characters for WiFi SSID.
+     */
     static const uint8_t MAX_WIFI_SSID_LENGTH = 32U;
 
-    // Maximum number of characters for WiFi WPA Key
+    /**
+     * @brief Maximum number of characters for WiFi WPA Key.
+     */
     static const uint8_t MAX_WIFI_PASSWD_LENGTH = 63U;
 
-    // MAC Address string length (XX:XX:XX:XX:XX:XX)
+    /**
+     * @brief MAC Address number of byte (XX:XX:XX:XX:XX:XX).
+     */
+    static const uint8_t MAC_ADDRESS_NUM_BYTES = 6U;
+
+    /**
+     * @brief MAC Address string length (XX:XX:XX:XX:XX:XX).
+     */
     static const uint8_t MAC_ADDRESS_LENGTH = 18U;
+
+    /**
+     * @brief Maximum Length of UUID ("xxxxxxxxxxxx").
+     */
+    static constexpr uint8_t MAX_UUID_LENGTH = 13U;
+
+    /**
+     * @brief Maximum number of characters for Device ID.
+     */
+    static constexpr uint8_t MAX_DEVICE_ID_LENGTH = (MAX_UUID_LENGTH + 32U);
 }
 
 /*****************************************************************************/

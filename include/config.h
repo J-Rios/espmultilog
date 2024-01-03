@@ -17,7 +17,7 @@
 
 // Default Project Name
 #if !defined(SET_PROJECT_NAME)
-    #define SET_PROJECT_NAME "ESPMULTILOG"
+    #define SET_PROJECT_NAME "espmultilog"
 #endif
 
 // Default Firmware Application Version if not provided
@@ -45,19 +45,44 @@
 
 namespace ns_const
 {
-    // Default Project Name
+    /**
+     * @brief Default Project Name.
+     */
     static const char PROJECT_NAME[] = SET_PROJECT_NAME;
 
-    // Firmware Application Version
+    /**
+     * @brief Firmware Application Major Version.
+     */
     static const uint8_t FW_APP_VERSION_X = (uint8_t)(SET_FW_APP_VERSION_X);
+
+    /**
+     * @brief Firmware Application Minor Version.
+     */
     static const uint8_t FW_APP_VERSION_Y = (uint8_t)(SET_FW_APP_VERSION_Y);
+
+    /**
+     * @brief Firmware Application Patch Version.
+     */
     static const uint8_t FW_APP_VERSION_Z = (uint8_t)(SET_FW_APP_VERSION_Z);
 
-    // WiFi Default Connection
+    /**
+     * @brief Default WiFi SSID to use for connection.
+     */
     static const char WIFI_SSID[] = SET_WIFI_SSID;
+
+    /**
+     * @brief Default WiFi PSK Password to use for connection.
+     */
     static const char WIFI_PWD[] = SET_WIFI_PWD;
 
-    // Default Debug Serial Port Speed
+    /**
+     * @brief Default Commission WiFi AP PSK Password.
+     */
+    static const char WIFI_AP_PWD[] = "espmultilog1234";
+
+    /**
+     * @brief Default Debug Serial Port Speed.
+     */
     static const uint32_t DEFAULT_UART_BAUD_RATE = 115200U;
 }
 
