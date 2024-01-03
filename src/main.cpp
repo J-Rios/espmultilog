@@ -40,10 +40,21 @@
 // Arduino Framework
 #include <Arduino.h>
 
+// Constant Data
+#include "constants.h"
+
 /*****************************************************************************/
 
 /* In-Scope Function Prototypes */
 
+/**
+ * @brief Configure and initialize the Debug Serial.
+ */
+static void serial_debug_setup();
+
+/**
+ * @brief Configure and initialize the WiFi.
+ */
 static void wifi_setup();
 
 /*****************************************************************************/
@@ -52,6 +63,7 @@ static void wifi_setup();
 
 void setup()
 {
+    serial_debug_setup();
     wifi_setup();
 }
 
@@ -63,6 +75,20 @@ void loop()
 /*****************************************************************************/
 
 /* In-Scope Functions */
+
+/**
+ * @details This function initialize the Debug UART Port and write an App
+ * start header information with the project name and version.
+ */
+static void serial_debug_setup()
+{
+    Serial.begin(ns_const::DEFAULT_UART_BAUD_RATE);
+    Serial.printf("%s (v%d.%d.%d)\n",
+        ns_const::PROJECT_NAME,
+        (int)(ns_const::FW_APP_VERSION_X),
+        (int)(ns_const::FW_APP_VERSION_Y),
+        (int)(ns_const::FW_APP_VERSION_Z));
+}
 
 static void wifi_setup()
 {
