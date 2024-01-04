@@ -1,7 +1,7 @@
 /**
  * @file    main.cpp
  * @author  Jose Miguel Rios Rubio <jrios.github@gmail.com>
- * @date    03-01-2024
+ * @date    2024-01-03
  * @version 1.0.0
  *
  * @section DESCRIPTION
@@ -12,7 +12,7 @@
  *
  * MIT License
  *
- * Copyright (c) 2023 Jose Miguel Rios Rubio
+ * Copyright (c) 2024 Jose Miguel Rios Rubio
  *
  * Permission is hereby granted, free of charge, to any person obtaining a
  * copy of this software and associated documentation files (the "Software"),
@@ -58,6 +58,14 @@
 // WiFi Commissioning Portal
 #include "commissioning/wifi_commissioning.h"
 
+// Device Interfaces
+#include "interfaces/adc/iface_adc.h"
+#include "interfaces/can/iface_can.h"
+#include "interfaces/dio/iface_dio.h"
+#include "interfaces/i2c/iface_i2c.h"
+#include "interfaces/spi/iface_spi.h"
+#include "interfaces/uart/iface_uart.h"
+
 /*****************************************************************************/
 
 /* In-Scope Function Prototypes */
@@ -74,6 +82,14 @@ static void network_setup();
 void setup()
 {
     CLI.init();
+
+    IfaceADC.init();
+    IfaceCAN.init();
+    IfaceDIO.init();
+    IfaceI2C.init();
+    IfaceSPI.init();
+    IfaceUART.init();
+
     network_setup();
 }
 
@@ -81,6 +97,12 @@ void loop()
 {
     // Run Standard Managers
     CLI.process();
+    IfaceADC.process();
+    IfaceCAN.process();
+    IfaceDIO.process();
+    IfaceI2C.process();
+    IfaceSPI.process();
+    IfaceUART.process();
     WifiCommissioning.process();
 
     // Run WiFi Connection Required Managers
