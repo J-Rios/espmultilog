@@ -72,10 +72,9 @@ extern char* get_device_id();
 
 /**
  * @brief Get a device Unique Universal Identifier string.
- * @param uuid Pointer to string array to store the UUID.
- * @param uuid_size Size of 'uuid' string array to store the UUID in.
+ * @return char* Pointer to Device UUID static string.
  */
-extern void get_device_uuid(char* uuid, const uint32_t uuid_size);
+extern char* get_device_uuid();
 
 // Auxiliary functions for string to number safe conversion
 extern t_return_code safe_atoi_u8(const char* in_str, const size_t in_str_len,

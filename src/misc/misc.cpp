@@ -63,17 +63,16 @@
  */
 char* get_device_id()
 {
-    char uuid[ns_const::MAX_UUID_LENGTH] = { 0 };
-    get_device_uuid(uuid, ns_const::MAX_UUID_LENGTH);
-
     static_assert(
         ( sizeof(ns_const::PROJECT_NAME) + ns_const::MAX_UUID_LENGTH )
         <= ns_const::MAX_DEVICE_ID_LENGTH,
         "PROJECT_NAME too long for Device ID"
     );
 
+    get_device_uuid();
+
     snprintf(ns_device::id, ns_const::MAX_DEVICE_ID_LENGTH, "%s_%s",
-        ns_const::PROJECT_NAME, uuid);
+        ns_const::PROJECT_NAME, ns_device::uuid);
 
     return ns_device::id;
 }
@@ -82,7 +81,7 @@ char* get_device_id()
  * @details This function creates a string based on device MAC Address bytes
  * to be used as a device UUID.
  */
-void get_device_uuid(char* uuid, const uint32_t uuid_size)
+char* get_device_uuid()
 {
     uint8_t mac[ns_const::MAC_ADDRESS_NUM_BYTES];
 
@@ -91,8 +90,11 @@ void get_device_uuid(char* uuid, const uint32_t uuid_size)
     else
     {   esp_wifi_get_mac((wifi_interface_t)ESP_IF_WIFI_STA, mac);   }
 
-    snprintf(uuid, uuid_size, "%02X%02X%02X%02X%02X%02X",
+    snprintf(ns_device::uuid, ns_const::MAX_UUID_LENGTH,
+        "%02X%02X%02X%02X%02X%02X",
         mac[0], mac[1], mac[2], mac[3], mac[4], mac[5]);
+
+    return ns_device::uuid;
 }
 
 /**

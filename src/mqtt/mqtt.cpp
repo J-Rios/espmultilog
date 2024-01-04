@@ -137,11 +137,10 @@ bool MQTTCommunication::init(WiFiClient* wifi_client)
     {   return true;   }
 
     // Set MQTT Topics
-    char device_id[MAC_ADDRESS_LENGTH];
-    snprintf(device_id, (size_t)(MAC_ADDRESS_LENGTH), "%s",
-        WiFi.macAddress().c_str());
-    snprintf(topic_input, sizeof(topic_input), MQTT_TOPIC_IN, device_id);
-    snprintf(topic_output, sizeof(topic_output), MQTT_TOPIC_OUT, device_id);
+    snprintf(topic_input, sizeof(topic_input),
+        MQTT_TOPIC_IN, get_device_uuid());
+    snprintf(topic_output, sizeof(topic_output),
+        MQTT_TOPIC_OUT, get_device_uuid());
     Serial.printf("MQTT Topics to use:\n");
     Serial.printf("%s\n", topic_input);
     Serial.printf("%s\n", topic_output);

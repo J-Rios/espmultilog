@@ -49,6 +49,17 @@
 // Command Line Interface
 #include "cli/cli.h"
 
+// Device Interfaces
+#include "interfaces/adc/iface_adc.h"
+#include "interfaces/can/iface_can.h"
+#include "interfaces/dio/iface_dio.h"
+#include "interfaces/i2c/iface_i2c.h"
+#include "interfaces/spi/iface_spi.h"
+#include "interfaces/uart/iface_uart.h"
+
+// MQTT Communication
+#include "misc/misc.h"
+
 // MQTT Communication
 #include "mqtt/mqtt.h"
 
@@ -57,14 +68,6 @@
 
 // WiFi Commissioning Portal
 #include "commissioning/wifi_commissioning.h"
-
-// Device Interfaces
-#include "interfaces/adc/iface_adc.h"
-#include "interfaces/can/iface_can.h"
-#include "interfaces/dio/iface_dio.h"
-#include "interfaces/i2c/iface_i2c.h"
-#include "interfaces/spi/iface_spi.h"
-#include "interfaces/uart/iface_uart.h"
 
 /*****************************************************************************/
 
@@ -81,6 +84,8 @@ static void network_setup();
 
 void setup()
 {
+    get_device_id();
+
     CLI.init();
 
     IfaceADC.init();

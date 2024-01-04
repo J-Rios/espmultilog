@@ -61,9 +61,14 @@
 namespace ns_device
 {
     /**
-     * @brief Device ID String.
+     * @brief Device ID String (espmultilog_123456789012).
      */
     extern char id[ns_const::MAX_DEVICE_ID_LENGTH];
+
+    /**
+     * @brief Device UUID String (123456789012).
+     */
+    extern char uuid[ns_const::MAX_UUID_LENGTH];
 }
 
 namespace ns_wifi

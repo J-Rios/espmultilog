@@ -47,9 +47,14 @@
 namespace ns_device
 {
     /**
-     * @brief Device ID String.
+     * @brief Device ID String (espmultilog_123456789012).
      */
-    char id[ns_const::MAX_DEVICE_ID_LENGTH] = { 0 };
+    char id[ns_const::MAX_DEVICE_ID_LENGTH] = { '\0' };
+
+    /**
+     * @brief Device UUID String (123456789012).
+     */
+    char uuid[ns_const::MAX_UUID_LENGTH] = { '\0' };
 }
 
 /*****************************************************************************/
