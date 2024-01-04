@@ -11,7 +11,7 @@
 #include "constants.h"
 
 // Miscellaneous Library
-#include "misc.h"
+#include "../misc/misc.h"
 
 /*****************************************************************************/
 

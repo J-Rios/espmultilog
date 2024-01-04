@@ -12,11 +12,11 @@
 #include <cstdint>
 #include <cstddef>
 
-// Constant Data
-#include "constants.h"
-
 // WiFi Library
 #include <WiFi.h>
+
+// Constant Data
+#include "constants.h"
 
 /*****************************************************************************/
 

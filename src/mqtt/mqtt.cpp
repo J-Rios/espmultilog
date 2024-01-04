@@ -10,14 +10,11 @@
 // Hardware Abstraction Layer Framework
 #include "Arduino.h"
 
-// Constant Data
-#include "constants.h"
-
 // GLobal Data
-#include "global.h"
+#include "../global/global.h"
 
 // Miscellaneous Library
-#include "misc.h"
+#include "../misc/misc.h"
 
 /*****************************************************************************/
 

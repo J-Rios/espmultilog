@@ -44,19 +44,19 @@
 #include "constants.h"
 
 // Global Data
-#include "global.h"
+#include "global/global.h"
 
 // Command Line Interface
-#include "cli.h"
+#include "cli/cli.h"
 
 // MQTT Communication
-#include "mqtt.h"
+#include "mqtt/mqtt.h"
 
 // Network State Library
-#include "network_interface.h"
+#include "network/network_interface.h"
 
 // WiFi Commissioning Portal
-#include "wifi_commissioning.h"
+#include "commissioning/wifi_commissioning.h"
 
 /*****************************************************************************/
 

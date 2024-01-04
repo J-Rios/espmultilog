@@ -4,18 +4,18 @@
 // Header Interface
 #include "misc.h"
 
-// Constant Data
-#include "constants.h"
-
-// Global Data
-#include "global.h"
-
 // Hardware Abstraction Layer Framework
 #include "Arduino.h"
 
 // ESP32 WiFi Library
 #include "WiFi.h"
 #include "esp_wifi.h"
+
+// Constant Data
+#include "constants.h"
+
+// Global Data
+#include "../global/global.h"
 
 /*****************************************************************************/
 
