@@ -6,6 +6,21 @@ An Espmultilog device will monitorize the different interfaces availables on the
 
 This opens the door to develop and use of high level software tools or REST APIs to monitorize or control the device status.
 
+## Device Setup
+
+Once the device startup for the first time, it requires internet connection so a Commisionning procedure through WiFi must be followed by the user in order to setup the WiFi network credentials into the device.
+
+The device uses WiFi Manager to handle this procedure, at startup it try to connect to the last configured WiFi network but in case there is no connection configured or the connection fails, the device will launch a WiFi Access Point (AP) to allow the user connect into it and access to the Commisioning Web Server for device configuration.
+
+The device WiFi AP that will be triggered by default will be something like the follow:
+
+AP SSID: epmultilog_NNNNNNNNNNNN (the "NNNNNNNNNNNN" is the unique device MAC Address)
+AP Password: espmultilog1234
+
+To setup the device, the user must connect to this WiFi AP with any device (i.e. PC, Smartphone, etc.), then use a web browser and access to the device configuration web page by accessing the address "192.168.4.1". Once the page is available, provide your network WiFi connection credentials to the device in order to make the device store this information and connect to it for the standard operation.
+
+A device that has been setup, will use the configured credentials to connect and use that WiFi network in the future (after any device reboot), so there is no need to do this setup again (or do it again in case you want to modify the WiFi network were the device should connect, for example if you plan to move the device to a different location and use a different network).
+
 ## Interface Support Status
 
 Here is the list of current supported interfaces:
