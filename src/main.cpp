@@ -43,6 +43,12 @@
 // Constant Data
 #include "constants.h"
 
+// Global Data
+#include "global.h"
+
+// MQTT Communication
+#include "mqtt.h"
+
 // Network State Library
 #include "network_interface.h"
 
@@ -59,9 +65,9 @@
 static void serial_debug_setup();
 
 /**
- * @brief Configure and initialize the WiFi.
+ * @brief Configure and initialize the WiFi and MQTT.
  */
-static void wifi_setup();
+static void network_setup();
 
 /*****************************************************************************/
 
@@ -70,7 +76,7 @@ static void wifi_setup();
 void setup()
 {
     serial_debug_setup();
-    wifi_setup();
+    network_setup();
 }
 
 void loop()
@@ -81,7 +87,7 @@ void loop()
     // Run WiFi Connection Required Managers
     if (Network.available())
     {
-        //MQTT.process();
+        MQTT.process();
     }
 }
 
@@ -107,13 +113,15 @@ static void serial_debug_setup()
 /**
  * @details This function initializes the Network component to start tracking
  * network events changes. Then it initializes the WiFi Manager component and
- * request to try WiFi connection to the system configured WiFi Station.
+ * request to try WiFi connection to the system configured WiFi Station. At
+ * last, it initializes the MQTT communication interface component.
  */
-static void wifi_setup()
+static void network_setup()
 {
     Network.init();
     WifiCommissioning.init();
     WifiCommissioning.connect();
+    MQTT.init(&(ns_wifi::WifiClient));
 }
 
 /*****************************************************************************/

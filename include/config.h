@@ -84,6 +84,26 @@ namespace ns_const
      * @brief Default Debug Serial Port Speed.
      */
     static const uint32_t DEFAULT_UART_BAUD_RATE = 115200U;
+
+    /**
+     * @brief Default MQTT Server/Broker Host to use.
+     */
+    static const char* MQTT_SERVER = "test.mosquitto.org";
+
+    /**
+     * @brief Default MQTT Server/Broker Port to use.
+     */
+    static const uint16_t MQTT_PORT = 1883U;
+
+    /**
+     * @brief MQTT Standard Control Input topic.
+     */
+    static const char MQTT_TOPIC_IN[] = "/%s/control/in";
+
+    /**
+     * @brief MQTT Standard Control Output topic.
+     */
+    static const char MQTT_TOPIC_OUT[] = "/%s/control/out";
 }
 
 /*****************************************************************************/

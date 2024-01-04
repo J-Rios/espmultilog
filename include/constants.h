@@ -49,6 +49,11 @@ namespace ns_const
      * @brief Maximum number of characters for Device ID.
      */
     static constexpr uint8_t MAX_DEVICE_ID_LENGTH = (MAX_UUID_LENGTH + 32U);
+
+    /**
+     * @brief Maximum number of characters expected for a MQTT Topic.
+     */
+    static constexpr uint8_t MQTT_TOPIC_MAX_LEN = (MAC_ADDRESS_LENGTH + 25U);
 }
 
 /*****************************************************************************/
