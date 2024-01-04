@@ -25,12 +25,12 @@
 
 /*****************************************************************************/
 
-/* In-Scope Function Prototypes */
+/* Object Instantiation */
 
-// CLI command callback functions
-static void cmd_wifi_status(MINBASECLI* Cli, int argc, char* argv[]);
-static void cmd_reboot(MINBASECLI* Cli, int argc, char* argv[]);
-static void cmd_version(MINBASECLI* Cli, int argc, char* argv[]);
+/**
+ * @brief Command Line Interface Object.
+ */
+CommandLineInterface CLI;
 
 /*****************************************************************************/
 
@@ -40,9 +40,18 @@ MINBASECLI Cli;
 
 /*****************************************************************************/
 
-/* Command Line Interface Functions */
+/* In-Scope Function Prototypes */
 
-void cli_init()
+// CLI command callback functions
+static void cmd_wifi_status(MINBASECLI* Cli, int argc, char* argv[]);
+static void cmd_reboot(MINBASECLI* Cli, int argc, char* argv[]);
+static void cmd_version(MINBASECLI* Cli, int argc, char* argv[]);
+
+/*****************************************************************************/
+
+/* Command Line Interface: Public Methods */
+
+void CommandLineInterface::init()
 {
     // CLI init to use Serial as interface
     Cli.setup(&Serial, ns_const::DEFAULT_UART_BAUD_RATE);
@@ -62,7 +71,7 @@ void cli_init()
     Cli.printf("\nCommand Line Interface is ready\n\n");
 }
 
-void cli_process()
+void CommandLineInterface::process()
 {
     Cli.run();
 }

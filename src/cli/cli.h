@@ -6,11 +6,37 @@
 
 /*****************************************************************************/
 
-/* Function Declarations */
+/* Class Interface */
 
-extern void cli_init();
+class CommandLineInterface
+{
+    /******************************************************************/
 
-extern void cli_process();
+    /* Public Methods */
+
+    public:
+
+        /**
+         * @brief Initializes the Command Line Interface.
+         */
+        void init();
+
+        /**
+         * @brief Manage the Command Line Interface.
+         */
+        void process();
+
+    /******************************************************************/
+};
+
+/*****************************************************************************/
+
+/* Object Declaration */
+
+/**
+ * @brief Command Line Interface Declaration.
+ */
+extern CommandLineInterface CLI;
 
 /*****************************************************************************/
 

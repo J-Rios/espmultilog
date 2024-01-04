@@ -73,14 +73,14 @@ static void network_setup();
 
 void setup()
 {
-    cli_init();
+    CLI.init();
     network_setup();
 }
 
 void loop()
 {
     // Run Standard Managers
-    cli_process();
+    CLI.process();
     WifiCommissioning.process();
 
     // Run WiFi Connection Required Managers
