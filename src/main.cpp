@@ -46,6 +46,9 @@
 // Global Data
 #include "global.h"
 
+// Command Line Interface
+#include "cli.h"
+
 // MQTT Communication
 #include "mqtt.h"
 
@@ -60,11 +63,6 @@
 /* In-Scope Function Prototypes */
 
 /**
- * @brief Configure and initialize the Debug Serial.
- */
-static void serial_debug_setup();
-
-/**
  * @brief Configure and initialize the WiFi and MQTT.
  */
 static void network_setup();
@@ -75,13 +73,14 @@ static void network_setup();
 
 void setup()
 {
-    serial_debug_setup();
+    cli_init();
     network_setup();
 }
 
 void loop()
 {
     // Run Standard Managers
+    cli_process();
     WifiCommissioning.process();
 
     // Run WiFi Connection Required Managers
@@ -94,21 +93,6 @@ void loop()
 /*****************************************************************************/
 
 /* In-Scope Functions */
-
-/**
- * @details This function initialize the Debug UART Port and write an App
- * start header information with the project name and version.
- */
-static void serial_debug_setup()
-{
-    Serial.begin(ns_const::DEFAULT_UART_BAUD_RATE);
-
-    Serial.printf("%s (v%d.%d.%d)\n",
-        ns_const::PROJECT_NAME,
-        (int)(ns_const::FW_APP_VERSION_X),
-        (int)(ns_const::FW_APP_VERSION_Y),
-        (int)(ns_const::FW_APP_VERSION_Z));
-}
 
 /**
  * @details This function initializes the Network component to start tracking

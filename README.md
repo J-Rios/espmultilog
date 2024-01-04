@@ -21,6 +21,19 @@ To setup the device, the user must connect to this WiFi AP with any device (i.e.
 
 A device that has been setup, will use the configured credentials to connect and use that WiFi network in the future (after any device reboot), so there is no need to do this setup again (or do it again in case you want to modify the WiFi network were the device should connect, for example if you plan to move the device to a different location and use a different network).
 
+## Device Command Line Interface
+
+The device provides a Command Line Interface (CLI) through the default Serial interface that can be used to check information, and control/configure the device.
+
+The default CLI configuration is:
+
+- Serial
+- 8 data bits
+- 1 stop bit
+- none parity
+- 115200 bauds
+- All end of lines supported (CR, LF and CRLF).
+
 ## Interface Support Status
 
 Here is the list of current supported interfaces:
