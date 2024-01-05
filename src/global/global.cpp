@@ -55,6 +55,14 @@ namespace ns_device
      * @brief Device UUID String (123456789012).
      */
     char uuid[ns_const::MAX_UUID_LENGTH] = { '\0' };
+
+    namespace ns_uart
+    {
+        /**
+         * @brief Device UARTs configuration data.
+         */
+        s_uart_config uart_cfg[ns_const::MAX_NUM_UART];
+    }
 }
 
 /*****************************************************************************/

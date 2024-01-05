@@ -90,6 +90,11 @@ namespace ns_const
      * @brief Maximum number of characters expected for a MQTT Topic.
      */
     static constexpr uint8_t MQTT_TOPIC_MAX_LEN = (MAC_ADDRESS_LENGTH + 25U);
+
+    /**
+     * @brief Maximum number of Serial Ports in the device.
+     */
+    static constexpr uint8_t MAX_NUM_UART = SOC_UART_NUM;
 }
 
 /*****************************************************************************/

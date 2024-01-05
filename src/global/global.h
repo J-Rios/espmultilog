@@ -69,6 +69,58 @@ namespace ns_device
      * @brief Device UUID String (123456789012).
      */
     extern char uuid[ns_const::MAX_UUID_LENGTH];
+
+    namespace ns_uart
+    {
+        /**
+         * @brief Device UART configuration data.
+         */
+        struct s_uart_config
+        {
+            // UART Port configuration and enable/disable state
+            bool enable;
+
+            // Operation Mode for UART Rx and Tx as raw bytes instead of
+            // strings (CLI)
+            bool mode_raw_bytes;
+
+            // UART Baud Rate
+            uint32_t bauds;
+
+            #if 0 /* Full parameters configuration is not supported */
+                // UART Port configuration
+                uart_config_t config;
+            #endif
+
+            // Default struct initialization
+            s_uart_config()
+            {
+                enable = false;
+                mode_raw_bytes = false;
+                bauds = ns_const::DEFAULT_UART_BAUD_RATE;
+            #if 0 /* Full parameters configuration is not supported */
+                config.data_bits = UART_DATA_8_BITS;
+                config.stop_bits = UART_STOP_BITS_1;
+                config.parity = UART_PARITY_DISABLE;
+                config.flow_ctrl = UART_HW_FLOWCTRL_CTS_RTS;
+                config.rx_flow_ctrl_thresh = 122;
+                #if SOC_UART_SUPPORT_XTAL_CLK
+                    config.source_clk = UART_SCLK_XTAL;
+                    config.baud_rate = (int)(ns_const::DEFAULT_UART_BAUD_RATE);
+                #else
+                    config.source_clk = UART_SCLK_APB;
+                    config.baud_rate = _get_effective_baudrate(
+                        ns_const::DEFAULT_UART_BAUD_RATE);
+                #endif
+            #endif
+            }
+        };
+
+        /**
+         * @brief Device UARTs configuration data.
+         */
+        extern s_uart_config uart_cfg[ns_const::MAX_NUM_UART];
+    }
 }
 
 namespace ns_wifi

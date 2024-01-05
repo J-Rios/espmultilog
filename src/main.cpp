@@ -88,12 +88,12 @@ void setup()
 
     CLI.init();
 
-    IfaceADC.init();
-    IfaceCAN.init();
-    IfaceDIO.init();
-    IfaceI2C.init();
-    IfaceSPI.init();
-    IfaceUART.init();
+    //IfaceADC.init(ns_device::uuid);
+    //IfaceCAN.init(ns_device::uuid);
+    //IfaceDIO.init(ns_device::uuid);
+    //IfaceI2C.init(ns_device::uuid);
+    //IfaceSPI.init(ns_device::uuid);
+    IfaceUART.init(ns_device::uuid);
 
     network_setup();
 }
@@ -102,11 +102,11 @@ void loop()
 {
     // Run Standard Managers
     CLI.process();
-    IfaceADC.process();
-    IfaceCAN.process();
-    IfaceDIO.process();
-    IfaceI2C.process();
-    IfaceSPI.process();
+    //IfaceADC.process();
+    //IfaceCAN.process();
+    //IfaceDIO.process();
+    //IfaceI2C.process();
+    //IfaceSPI.process();
     IfaceUART.process();
     WifiCommissioning.process();
 
