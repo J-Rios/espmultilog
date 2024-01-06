@@ -71,15 +71,6 @@
 
 /*****************************************************************************/
 
-/* In-Scope Function Prototypes */
-
-/**
- * @brief Configure and initialize the WiFi and MQTT.
- */
-static void network_setup();
-
-/*****************************************************************************/
-
 /* Setup & Loop Functions */
 
 void setup()
@@ -95,7 +86,10 @@ void setup()
     //IfaceSPI.init(ns_device::uuid);
     IfaceUART.init(ns_device::uuid);
 
-    network_setup();
+    Network.init();
+    WifiCommissioning.init();
+    WifiCommissioning.connect();
+    MQTT.init(&(ns_wifi::WifiClient));
 }
 
 void loop()
@@ -115,24 +109,6 @@ void loop()
     {
         MQTT.process();
     }
-}
-
-/*****************************************************************************/
-
-/* In-Scope Functions */
-
-/**
- * @details This function initializes the Network component to start tracking
- * network events changes. Then it initializes the WiFi Manager component and
- * request to try WiFi connection to the system configured WiFi Station. At
- * last, it initializes the MQTT communication interface component.
- */
-static void network_setup()
-{
-    Network.init();
-    WifiCommissioning.init();
-    WifiCommissioning.connect();
-    MQTT.init(&(ns_wifi::WifiClient));
 }
 
 /*****************************************************************************/

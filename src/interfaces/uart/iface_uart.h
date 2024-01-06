@@ -139,6 +139,23 @@ class InterfaceUART
         void process();
 
         /**
+         * @brief Get the MQTT UART Configuration topic for specified
+         * Port.
+         * @param uart_n UART Port number topic to get.
+         * @return char* Address of internal topic attribute.
+         */
+        const char* get_topic_cfg(const uint8_t uart_n);
+
+        /**
+         * @brief Configure an UART Port.
+         * @param uart_n UART Port number to configure.
+         * @param data Configuration data string command.
+         * @return true Configuration success.
+         * @return false Configuration fail.
+         */
+        bool configure(const uint8_t uart_n, char* data);
+
+        /**
          * @brief Configure the Baud Rate of an UART Port.
          * @param uart_n UART Port number to configure.
          * @param bauds Baud Rate speed to configure.

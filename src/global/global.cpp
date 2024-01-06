@@ -78,3 +78,16 @@ namespace ns_wifi
 }
 
 /*****************************************************************************/
+
+/* Miscellaneous Elements */
+
+namespace ns_misc
+{
+    /**
+     * @brief Struct of string parsed to handle it as a command +
+     * arguments.
+     */
+    s_str_cmd_args cmd_args;
+}
+
+/*****************************************************************************/

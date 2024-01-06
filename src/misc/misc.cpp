@@ -50,9 +50,6 @@
 // Constant Data
 #include "constants.h"
 
-// Global Data
-#include "../global/global.h"
-
 /*****************************************************************************/
 
 /* Function Implementations */
@@ -95,6 +92,129 @@ char* get_device_uuid()
         mac[0], mac[1], mac[2], mac[3], mac[4], mac[5]);
 
     return ns_device::uuid;
+}
+
+/**
+ * @details This function count the number of words in the provided "str_in"
+ * string, store it in the provided "s_str_cmd_args->argc", then use it to
+ * loop searching for a space character using a pointer in order to find the
+ * start address of each word and copy each word to the provided
+ * "s_str_cmd_args->argv" array of strings to return it back.
+ */
+void str_parse_cmd_args(char* str_in, ns_misc::s_str_cmd_args* cmd_args)
+{
+    // Get Arguments
+    char* ptr_data = str_in;
+    char* ptr_argv = NULL;
+
+    // Clear any previous parse result
+    cmd_args->argc = 0U;
+    cmd_args->cmd[0] = '\0';
+    for (uint8_t i = 0; i < ns_const::MAX_STR_ARGV; i++)
+    {   cmd_args->argv[i][0] = '\0';   }
+
+    // Count number of words in the string
+    cmd_args->argc = str_count_words(str_in);
+
+    for (uint8_t i = 0; i < cmd_args->argc; i++)
+    {
+        // Break if number of arguments is large than buffer
+        if (i >= ns_const::MAX_STR_ARGV)
+        {   break;   }
+
+        // Point to next argument
+        ptr_argv = strstr(ptr_data, " ");
+        if (ptr_argv == NULL)
+        {
+            // No ' ' character found, so it is last command, lets get it
+            strncpy(cmd_args->argv[i], ptr_data, strlen(ptr_data));
+            cmd_args->argv[i][ns_const::MAX_STR_CMD_ARG_LEN-1] = '\0';
+            break;
+        }
+        ptr_data = ptr_data + (ptr_argv - ptr_data) + 1;
+        ptr_argv = ptr_argv + 1;
+
+        // Get the argument
+        str_read_until_char(ptr_argv, strlen(ptr_argv), ' ',
+            cmd_args->argv[i], ns_const::MAX_STR_CMD_ARG_LEN);
+    }
+}
+
+/**
+ * @details
+ * This function loop through provided str_in string characters searching for
+ * "X Y" pattern to increase the counter of words until the end of the string.
+ */
+uint32_t str_count_words(const char* str_in)
+{
+    uint32_t n = 1;
+
+    // Check if string is empty
+    if (str_in == nullptr)
+    {   return 0;   }
+    if (str_in[0] == '\0')
+    {   return 0;   }
+
+    // Check if string just has 1 character
+    const size_t str_in_len = sizeof(str_in);
+    if (str_in_len == 1)
+    {   return 1;   }
+
+    // Check for character occurrences
+    for (size_t i = 1; i < str_in_len; i++)
+    {
+        // Check if end of string detected
+        if (str_in[i] == '\0')
+        {   break;   }
+
+        // Check if pattern "X Y", "X\rY" or "X\nY" does not meet
+        if ((str_in[i] != ' ') && (str_in[i] != '\r') && (str_in[i] != '\n'))
+        {   continue;   }
+        if ((str_in[i-1] == ' ') || (str_in[i-1] == '\r') ||
+                (str_in[i-1] == '\n'))
+        {   continue;   }
+        if ((str_in[i+1] == ' ') || (str_in[i+1] == '\r') ||
+                (str_in[i+1] == '\n'))
+        {   continue;   }
+        if (str_in[i+1] == '\0')
+        {   continue;   }
+
+        // Pattern detected, increase word count
+        n = n + 1;
+    }
+
+    return n;
+}
+
+/**
+ * @details
+ * This function loop for each character of the provided string checking for
+ * the requested "until" character while copying each character into the
+ * str_read array.
+ */
+bool str_read_until_char(char* str, const size_t str_len, const char until_c,
+        char* str_read, const size_t str_read_size)
+{
+    size_t i = 0;
+    bool found = false;
+
+    str_read[0] = '\0';
+    while (i < str_len)
+    {
+        if (str[i] == until_c)
+        {
+            found = true;
+            break;
+        }
+        if (i < str_read_size)
+        {   str_read[i] = str[i];   }
+        i = i + 1;
+    }
+    str_read[str_read_size-1] = '\0';
+    if (i < str_read_size)
+    {   str_read[i] = '\0';   }
+
+    return found;
 }
 
 /**

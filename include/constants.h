@@ -95,6 +95,18 @@ namespace ns_const
      * @brief Maximum number of Serial Ports in the device.
      */
     static constexpr uint8_t MAX_NUM_UART = SOC_UART_NUM;
+
+    /**
+     * @brief Maximum number of words in a string parsed for
+     * command + arguments handling.
+     */
+    static const uint32_t MAX_STR_ARGV = 5U;
+
+    /**
+     * @brief Maximum number of characters for each string in a string
+     * parsed for command + arguments handling.
+     */
+    static const uint32_t MAX_STR_CMD_ARG_LEN = 32U;
 }
 
 /*****************************************************************************/

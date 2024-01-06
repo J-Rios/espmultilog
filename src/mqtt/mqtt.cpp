@@ -10,15 +10,35 @@
  *
  * Check Messages:
  * mosquitto_sub -F '%I\n%t\n%p\n' -h "test.mosquitto.org" -p 1883
- *               -t "/24:0A:C4:81:AD:F8/control/+"
+ *               -t "/XXXXXXXXXXXX/control/+"
  *
  * Request FW Version:
  * mosquitto_pub -h "test.mosquitto.org" -p 1883
- *               -t "/24:0A:C4:81:AD:F8/control/in" -m "version"
+ *               -t "/XXXXXXXXXXXX/control/in" -m "version"
  *
  * Request Reboot:
  * mosquitto_pub -h "test.mosquitto.org" -p 1883
- *               -t "/24:0A:C4:81:AD:F8/control/in" -m "reboot"
+ *               -t "/XXXXXXXXXXXX/control/in" -m "reboot"
+ *
+ * Configure UART Port 1 speed to 9600 bauds:
+ * mosquitto_pub -h "test.mosquitto.org" -p 1883
+ *               -t "/XXXXXXXXXXXX/uart/N/cfg" -m "bauds 9600"
+ *
+ * Configure UART Port 1 data handling mode for RAW Bytes:
+ * mosquitto_pub -h "test.mosquitto.org" -p 1883
+ *               -t "/XXXXXXXXXXXX/uart/N/cfg" -m "mode raw"
+ *
+ * Configure UART Port 1 data handling mode for String:
+ * mosquitto_pub -h "test.mosquitto.org" -p 1883
+ *               -t "/XXXXXXXXXXXX/uart/N/cfg" -m "mode string"
+ *
+ * Enable Logging of UART Port 1:
+ * mosquitto_pub -h "test.mosquitto.org" -p 1883
+ *               -t "/XXXXXXXXXXXX/uart/N/cfg" -m "enable"
+ *
+ * Disable Logging of UART Port 1:
+ * mosquitto_pub -h "test.mosquitto.org" -p 1883
+ *               -t "/XXXXXXXXXXXX/uart/N/cfg" -m "disable"
  *
  * @section LICENSE
  *
@@ -60,6 +80,14 @@
 
 // GLobal Data
 #include "../global/global.h"
+
+// Device Interfaces
+#include "../interfaces/adc/iface_adc.h"
+#include "../interfaces/can/iface_can.h"
+#include "../interfaces/dio/iface_dio.h"
+#include "../interfaces/i2c/iface_i2c.h"
+#include "../interfaces/spi/iface_spi.h"
+#include "../interfaces/uart/iface_uart.h"
 
 // Miscellaneous Library
 #include "../misc/misc.h"
@@ -226,9 +254,12 @@ void MQTTCommunication::handle_msg_rx(const char* topic, char* payload)
     if (strcmp(topic, topic_input) == 0)
     {   msg_rx_in(topic, payload);   }
 
-    // Message received from an unknown and unexpected Topic
-    else
-    {   Serial.println("[Warning] Unknown Topic");   }
+    // Topic UART Port Configuration
+    for (uint8_t uart_n = 0U; uart_n < ns_const::MAX_NUM_UART; uart_n++)
+    {
+        if (strcmp(topic, IfaceUART.get_topic_cfg(uart_n)) == 0)
+        {   IfaceUART.configure(uart_n, payload);   }
+    }
 }
 
 void MQTTCommunication::msg_rx_in(const char* topic, char* payload)

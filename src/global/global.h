@@ -131,6 +131,26 @@ namespace ns_wifi
     extern WiFiClient WifiClient;
 }
 
+namespace ns_misc
+{
+    /**
+     * @brief Struct of string parsed to handle it as a command +
+     * arguments.
+     */
+    struct s_str_cmd_args
+    {
+        char cmd[ns_const::MAX_STR_CMD_ARG_LEN];
+        char argv[ns_const::MAX_STR_ARGV][ns_const::MAX_STR_CMD_ARG_LEN];
+        uint8_t argc;
+    };
+
+    /**
+     * @brief Struct of string parsed to handle it as a command +
+     * arguments.
+     */
+    extern s_str_cmd_args cmd_args;
+}
+
 /*****************************************************************************/
 
 /* Include Guard Close */

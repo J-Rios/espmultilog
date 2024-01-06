@@ -14,7 +14,7 @@ The device uses WiFi Manager to handle this procedure, at startup it try to conn
 
 The device WiFi AP that will be triggered by default will be something like the follow:
 
-AP SSID: epmultilog_NNNNNNNNNNNN (the "NNNNNNNNNNNN" is the unique device MAC Address)
+AP SSID: epmultilog_XXXXXXXXXXXX (the "XXXXXXXXXXXX" is the unique device MAC Address)
 AP Password: espmultilog1234
 
 To setup the device, the user must connect to this WiFi AP with any device (i.e. PC, Smartphone, etc.), then use a web browser and access to the device configuration web page by accessing the address "192.168.4.1". Once the page is available, provide your network WiFi connection credentials to the device in order to make the device store this information and connect to it for the standard operation.
@@ -41,7 +41,7 @@ Here is the list of current supported interfaces:
 - [ ] ADC.
 - [ ] DIO.
 - [ ] I2C.
-- [ ] Serial UART/USART.
+- [x] Serial UART/USART.
 - [ ] SPI.
 - [ ] System.
 - [ ] TWAI (CAN).
@@ -73,6 +73,55 @@ The project could allow logging any **I2C transactions** that flows through an I
 ## UART/USART Interface
 
 The project could allow logging any **Serial communication message** that flows through an **UART/USART port**.
+
+The ESP32 devices have 2 or 3 configurable UARTs that can be used, the first UART is setup in this project to be used as a CLI for device debug and configuration so that Port is not allowed to be used for logging.
+
+By default, the device doesn't log any of the UARTs, the user is required to remotely configure and enable any of the UARTs through MQTT to make it start logging.
+
+There is 3 types of MQTT Topics related to UARTs Interface Logging:
+
+- **/XXXXXXXXXXXX/uart/N/cfg** - Topic for UART Ports Configuration.
+- **/XXXXXXXXXXXX/uart/N/rx** - Topic to log received data from the UART Port.
+- **/XXXXXXXXXXXX/uart/N/tx** - Topic to send and log transmitted data through the UART Port.
+
+Notes:
+
+- The **"XXXXXXXXXXXX"** is the target device UUID (MAC Address, i.e. "1234567890AB").
+- The **"N"** is a number ("1" or "2") to target the device UART Port to configure/log/control.
+- If UART speed is not configured, by default the device will use 115200 bauds on all the Ports.
+
+For example, the procedure to configure and enable the logging of the UART Port 1 on a device with a MAC address 12:34:56:78:90:AB, is as follows:
+
+1. Power-up the device and wait until it is connected to the MQTT Server.
+
+2. Subscribe to device UART configuration MQTT topic to check acknowledge from the device to the future requests:
+```bash
+mosquitto_sub -F '%I\n%t\n%p\n' -h "test.mosquitto.org" -p 1883 -t "/1234567890AB/uart/#"
+```
+
+1. Send a MQTT message to setup UART port 1 communication speed to 9600 bauds:
+
+```bash
+mosquitto_pub -h "test.mosquitto.org" -p 1883 -t "/1234567890AB/uart/1/cfg" -m "bauds 9600"
+```
+
+4. Check for device acknowledge response in the same topic with *"bauds ok"* to be sure it was set properly.
+
+5. Send a MQTT message to enable logging on UART Port 1:
+
+```bash
+mosquitto_pub -h "test.mosquitto.org" -p 1883 -t "/1234567890AB/uart/1/cfg" -m "enable"
+```
+
+6. Check for device acknowledge response in the same topic with *"enabled"* to be sure it was set properly.
+
+Note that you can modify the speed at any time without the need of disabling the port. Also, you can disable an UART port by:
+
+```bash
+mosquitto_pub -h "test.mosquitto.org" -p 1883 -t "/1234567890AB/uart/1/cfg" -m "disable"
+```
+
+### UART Interface Log Setu For UART configuration
 
 ## SPI Interface
 

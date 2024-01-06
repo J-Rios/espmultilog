@@ -47,6 +47,9 @@
 // Global Data
 #include "../../global/global.h"
 
+// Miscellaneous Functions
+#include "../../misc/misc.h"
+
 // MQTT Communication
 #include "../../mqtt/mqtt.h"
 
@@ -120,6 +123,73 @@ void InterfaceUART::process()
     // Handle Serial Ports Message Receptions
     for (uint8_t i = 0U; i < ns_const::MAX_NUM_UART; i++)
     {   handle_uart_rx(i);   }
+}
+
+/**
+ * @details Getter method to return any of the internal MQTT UART Configuration
+ * topic attribute.
+ */
+const char* InterfaceUART::get_topic_cfg(const uint8_t uart_n)
+{
+    // Do nothing if specified UART Port number is invalid
+    if (uart_n >= ns_const::MAX_NUM_UART)
+    {   return nullptr;   }
+
+    return topic_cfg[uart_n];
+}
+
+/**
+ * @details Check type of configuration command string was requested by the
+ * "data" argument, then call to the corresponding configuration method.
+ */
+bool InterfaceUART::configure(const uint8_t uart_n, char* data)
+{
+    using namespace ns_misc;
+
+    bool cfg_success = false;
+
+    // Parse string to get handle it as commad+arguments
+    str_parse_cmd_args(data, &cmd_args);
+    if (cmd_args.argc == 0U)
+    {   return false;   }
+
+    // UART Port Logging Enable
+    if (strcmp(cmd_args.cmd, "enable") == 0)
+    {   cfg_success = uart_enable(uart_n, true);   }
+
+    // UART Port Logging Disable
+    else if (strcmp(cmd_args.cmd, "disable") == 0)
+    {   cfg_success = uart_enable(uart_n, false);   }
+
+    // UART Port Configure Baudrate
+    else if (strcmp(cmd_args.cmd, "bauds ") == 0)
+    {
+        // Try to convert baudrate argument string to u32
+        uint32_t bauds = ns_const::DEFAULT_UART_BAUD_RATE;
+        t_return_code conversion_result = safe_atoi_u32(
+            cmd_args.argv[0], sizeof(cmd_args.argv[0]), &bauds);
+        if (conversion_result != t_return_code::RC_OK)
+        {   return false;   }
+
+        cfg_success = uart_config_speed(uart_n, bauds);
+    }
+
+    // UART Port Configure mode of data raw_byte/string handling
+    else if (strcmp(cmd_args.cmd, "mode") == 0)
+    {
+        if (strcmp(cmd_args.argv[0], "raw") == 0)
+        {   cfg_success = uart_config_mode_bytes(uart_n, true);   }
+        else if (strcmp(cmd_args.argv[0], "string") == 0)
+        {   cfg_success = uart_config_mode_bytes(uart_n, false);   }
+        else
+        {   return false;   }
+    }
+
+    // Unknown/Unexpected config
+    else
+    {   return false;   }
+
+    return cfg_success;
 }
 
 /**

@@ -48,6 +48,9 @@
 #include <cstdint>
 #include <cstddef>
 
+// Global Data
+#include "../global/global.h"
+
 /*****************************************************************************/
 
 /* Data Types */
@@ -75,6 +78,35 @@ extern char* get_device_id();
  * @return char* Pointer to Device UUID static string.
  */
 extern char* get_device_uuid();
+
+/**
+ * @brief Parse a string into a "s_str_cmd_args" structure to handle it
+ * as a command+arguments.
+ * @param str_in Input string to parse.
+ * @param cmd_args "s_str_cmd_args" structure to store the parsed data.
+ */
+extern void str_parse_cmd_args(char* str_in,
+    ns_misc::s_str_cmd_args* cmd_args);
+
+/**
+ * @brief  Count the number of words inside a string.
+ * @param  str_in Input string from where to count words.
+ * @return The number of words in the string.
+ */
+extern uint32_t str_count_words(const char* str_in);
+
+/**
+ * @brief  Get substring from array until a specific character or end
+ * of string.
+ * @param  str Input string from where to get the substring.
+ * @param  str_len Number of characters in "str".
+ * @param  until_c Get substring until this character.
+ * @param  str_read Buffer to store the read substring.
+ * @param  str_read_size Max size of read buffer.
+ * @return If character "until_c" was found (true/false).
+ */
+extern bool str_read_until_char(char* str, const size_t str_len,
+    const char until_c, char* str_read, const size_t str_read_size);
 
 // Auxiliary functions for string to number safe conversion
 extern t_return_code safe_atoi_u8(const char* in_str, const size_t in_str_len,
