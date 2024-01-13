@@ -24,14 +24,6 @@
  * mosquitto_pub -h "test.mosquitto.org" -p 1883
  *               -t "/XXXXXXXXXXXX/uart/N/cfg" -m "bauds 9600"
  *
- * Configure UART Port N data handling mode for RAW Bytes:
- * mosquitto_pub -h "test.mosquitto.org" -p 1883
- *               -t "/XXXXXXXXXXXX/uart/N/cfg" -m "mode raw"
- *
- * Configure UART Port N data handling mode for String:
- * mosquitto_pub -h "test.mosquitto.org" -p 1883
- *               -t "/XXXXXXXXXXXX/uart/N/cfg" -m "mode string"
- *
  * Enable Logging of UART Port N:
  * mosquitto_pub -h "test.mosquitto.org" -p 1883
  *               -t "/XXXXXXXXXXXX/uart/N/cfg" -m "enable"

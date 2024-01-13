@@ -187,17 +187,6 @@ bool InterfaceUART::configure(const uint8_t uart_n, int argc, char* argv[])
         cfg_success = uart_config_speed(uart_n, bauds);
     }
 
-    // UART Port Configure mode of data raw_byte/string handling
-    else if (strcmp(cmd, "mode") == 0)
-    {
-        if (strcmp(arg, "raw") == 0)
-        {   cfg_success = uart_config_mode_bytes(uart_n, true);   }
-        else if (strcmp(arg, "string") == 0)
-        {   cfg_success = uart_config_mode_bytes(uart_n, false);   }
-        else
-        {   return false;   }
-    }
-
     // Unknown/Unexpected config
     else
     {   return false;   }
@@ -225,31 +214,6 @@ bool InterfaceUART::uart_config_speed(const uint8_t uart_n,
     {   return false;   }
 
     ns_device::ns_uart::uart_cfg[uart_n].bauds = bauds;
-
-    return true;
-}
-
-/**
- * @details This function is a setter to enable or disable handling of
- * UART Port data as raw bytes by modifying the value of the Global
- * uart_cfg enable field.
- */
-bool InterfaceUART::uart_config_mode_bytes(const uint8_t uart_n,
-        const bool enable)
-{
-    // Do nothing if component was not initialized
-    if (initialized == false)
-    {   return false;   }
-
-    // Do nothing for UART0 that is used as device CLI
-    if (uart_n == 0U)
-    {   return false;   }
-
-    // Do nothing if specified UART Port number is invalid
-    if (uart_n >= ns_const::MAX_NUM_UART)
-    {   return false;   }
-
-    ns_device::ns_uart::uart_cfg[uart_n].mode_raw_bytes = enable;
 
     return true;
 }
@@ -302,10 +266,7 @@ bool InterfaceUART::uart_tx_msg(const uint8_t uart_n, const char* msg)
     {   return false;   }
 
     // Transmit the message through the UART Port
-    if (ns_device::ns_uart::uart_cfg[uart_n].mode_raw_bytes)
-    {   SerialPort[uart_n]->print(msg);   }
-    else
-    {   SerialPort[uart_n]->println(msg);   }
+    SerialPort[uart_n]->write(msg);
 
     return true;
 }
@@ -313,9 +274,7 @@ bool InterfaceUART::uart_tx_msg(const uint8_t uart_n, const char* msg)
 /**
  * @details This function checks that the provided UART Port number is valid
  * and has been enabled, then it send each of the messages from the provided
- * argument list through the UART port, and at the end, echoe the message to Transmitt by the UART
- * trhrough the MQTT Tx topic to acknowledge it transmission, at the end, if
- * the operation mode is not raw, an end of line is also send.
+ * argument list through the UART port.
  */
 bool InterfaceUART::uart_tx_msg(const uint8_t uart_n, int argc, char* argv[])
 {
@@ -337,9 +296,7 @@ bool InterfaceUART::uart_tx_msg(const uint8_t uart_n, int argc, char* argv[])
 
     // Transmit the message through the UART Port
     for (int i = 0; i < argc; i++)
-    {   SerialPort[uart_n]->print(argv[i]);   }
-    if (ns_device::ns_uart::uart_cfg[uart_n].mode_raw_bytes == false)
-    {   SerialPort[uart_n]->println("");   }
+    {   SerialPort[uart_n]->write(argv[i]);   }
 
     return true;
 }
@@ -368,46 +325,32 @@ bool InterfaceUART::handle_uart_rx(const uint8_t uart_n)
     if (ns_device::ns_uart::uart_cfg[uart_n].enable == false)
     {   return false;   }
 
+    // Do nothing if there is none UART data received
+    if (SerialPort[uart_n]->available() == 0)
+    {   return false;   }
+
     // Handle UART data reception
     uint8_t* ptr_rx_data = rx_data[uart_n];
     uint32_t* ptr_num_data_rx = &(num_data_rx[uart_n]);
-    if (SerialPort[uart_n]->available())
+
+    // Read received byte
+    ptr_rx_data[*ptr_num_data_rx] = SerialPort[uart_n]->read();
+    *ptr_num_data_rx = *ptr_num_data_rx + 1U;
+
+    // Send MQTT message if received byte is an End Of Line
+    if (ptr_rx_data[*ptr_num_data_rx - 1U] == '\n')
     {
-        // Read received byte
-        ptr_rx_data[*ptr_num_data_rx] = SerialPort[uart_n]->read();
-        *ptr_num_data_rx = *ptr_num_data_rx + 1U;
+        ptr_rx_data[*ptr_num_data_rx - 1U] = (uint8_t)('\0');
+        msg_published = publish_tx(uart_n, (const char*)(ptr_rx_data));
+        *ptr_num_data_rx = 0U;
+    }
 
-        // UART data received as raw bytes to send them as chunks
-        if (ns_device::ns_uart::uart_cfg[uart_n].mode_raw_bytes)
-        {
-            // Send MQTT message if buffer is completed
-            if (*ptr_num_data_rx == DATA_RX_BUFFER_SIZE-2U)
-            {
-                ptr_rx_data[DATA_RX_BUFFER_SIZE-1U] = (uint8_t)('\0');
-                msg_published = publish_tx(uart_n, (const char*)(ptr_rx_data));
-                *ptr_num_data_rx = 0U;
-            }
-        }
-
-        // UART data received as strings to send at end of line
-        else
-        {
-            // Send MQTT message if last received byte is an End Of Line
-            if (ptr_rx_data[*ptr_num_data_rx - 1U] == '\n')
-            {
-                ptr_rx_data[*ptr_num_data_rx - 1U] == (uint8_t)('\0');
-                msg_published = publish_tx(uart_n, (const char*)(ptr_rx_data));
-                *ptr_num_data_rx = 0U;
-            }
-
-            // Send MQTT message if buffer is completed
-            else if (*ptr_num_data_rx == DATA_RX_BUFFER_SIZE-2U)
-            {
-                ptr_rx_data[DATA_RX_BUFFER_SIZE-1U] = (uint8_t)('\0');
-                msg_published = publish_tx(uart_n, (const char*)(ptr_rx_data));
-                *ptr_num_data_rx = 0U;
-            }
-        }
+    // Send MQTT message if buffer is completed
+    else if (*ptr_num_data_rx == DATA_RX_BUFFER_SIZE - 1U)
+    {
+        ptr_rx_data[DATA_RX_BUFFER_SIZE - 1U] = (uint8_t)('\0');
+        msg_published = publish_tx(uart_n, (const char*)(ptr_rx_data));
+        *ptr_num_data_rx = 0U;
     }
 
     return msg_published;

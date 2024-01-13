@@ -80,10 +80,6 @@ namespace ns_device
             // UART Port configuration and enable/disable state
             bool enable;
 
-            // Operation Mode for UART Rx and Tx as raw bytes instead of
-            // strings (CLI)
-            bool mode_raw_bytes;
-
             // UART Baud Rate
             uint32_t bauds;
 
@@ -96,7 +92,6 @@ namespace ns_device
             s_uart_config()
             {
                 enable = false;
-                mode_raw_bytes = false;
                 bauds = ns_const::DEFAULT_UART_BAUD_RATE;
             #if 0 /* Full parameters configuration is not supported */
                 config.data_bits = UART_DATA_8_BITS;

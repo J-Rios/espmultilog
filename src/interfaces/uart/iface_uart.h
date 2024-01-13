@@ -174,16 +174,6 @@ class InterfaceUART
         bool uart_config_speed(const uint8_t uart_n, const uint32_t bauds);
 
         /**
-         * @brief Configure the operation mode of an UART Port to handle
-         * it as raw bytes or as strings (default).
-         * @param uart_n UART Port number to configure.
-         * @param enable Enable/Disable the raw byte mode.
-         * @return true Configuration success.
-         * @return false Configuration fail.
-         */
-        bool uart_config_mode_bytes(const uint8_t uart_n, const bool enable);
-
-        /**
          * @brief Enable or disable an UART Port to start being
          * monitorized and logged.
          * @param uart_n UART Port number to enable.
