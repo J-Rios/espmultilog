@@ -209,8 +209,9 @@ static void cmd_version(MINBASECLI* Cli, int argc, char* argv[])
  * Expected commands format:
  *   uart N command [arg1] [arg2] ...
  *
- * Configure UART Port 1 for 9600 bauds:
- *   uart 1 config bauds 9600
+ * Check UART Port 2 configuration status:
+ *   uart 2 status
+ *
  * Configure UART Port 1 for 9600 bauds:
  *   uart 1 config bauds 9600
  *
@@ -240,6 +241,22 @@ static void cmd_uart(MINBASECLI* Cli, int argc, char* argv[])
     {   show_invalid_cmd(Cli); return;   }
     if (uart_n >= ns_const::MAX_NUM_UART)
     {   show_invalid_cmd(Cli); return;   }
+
+    // Get UART Port Status Information
+    if (strcmp(argv[1], "status") == 0)
+    {
+        Cli->printf(
+            "{"
+                "\"port\":%" PRIu8 ","
+                "\"enable\":%d,"
+                "\"bauds\":%" PRIu32
+            "}\n",
+            uart_n,
+            (int)(ns_device::ns_uart::uart_cfg[uart_n].enable),
+            ns_device::ns_uart::uart_cfg[uart_n].bauds
+        );
+        return;
+    }
 
     // UART Port Configuration
     if (strcmp(argv[1], "config") == 0)
