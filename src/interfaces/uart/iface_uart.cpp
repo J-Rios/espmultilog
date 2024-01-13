@@ -83,6 +83,8 @@ InterfaceUART::InterfaceUART()
         {   rx_data[i][ii] = 0U;   }
         num_data_rx[i] = 0U;
     }
+    msg_status_port_n = 1U;
+    t_last_status_sent = 0U;
 }
 
 /**
@@ -91,6 +93,7 @@ InterfaceUART::InterfaceUART()
  */
 void InterfaceUART::init(const char* device_uuid)
 {
+    // Assign Serial Port Objects
     SerialPort[0] = &Serial;
     #if SOC_UART_NUM > 1
         SerialPort[1] = &Serial1;
@@ -99,6 +102,9 @@ void InterfaceUART::init(const char* device_uuid)
         SerialPort[2] = &Serial2;
     #endif
 
+    // Prepare MQTT Topics
+    snprintf(topic_status, sizeof(topic_status), MQTT_TOPIC_STATUS,
+        device_uuid);
     for (uint8_t i = 0U; i < ns_const::MAX_NUM_UART; i++)
     {
         snprintf(topic_cfg[i], sizeof(topic_cfg[i]),
@@ -106,6 +112,9 @@ void InterfaceUART::init(const char* device_uuid)
         snprintf(topic_rx[i], sizeof(topic_rx[i]), MQTT_TOPIC_RX, device_uuid);
         snprintf(topic_tx[i], sizeof(topic_tx[i]), MQTT_TOPIC_TX, device_uuid);
     }
+
+    // Init counter for UART Status info MQTT messages send
+    t_last_status_sent = millis();
 
     initialized = true;
 }
@@ -123,6 +132,13 @@ void InterfaceUART::process()
     // Handle Serial Ports Message Receptions
     for (uint8_t i = 0U; i < ns_const::MAX_NUM_UART; i++)
     {   handle_uart_rx(i);   }
+
+    // Send current UART status information each second to MQTT
+    if (millis() - t_last_status_sent >= T_SEND_STATUS_INFO_MS)
+    {
+        mqtt_send_uart_status_info();
+        t_last_status_sent = millis();
+    }
 }
 
 /**
@@ -341,7 +357,7 @@ bool InterfaceUART::handle_uart_rx(const uint8_t uart_n)
     if (ptr_rx_data[*ptr_num_data_rx - 1U] == '\n')
     {
         ptr_rx_data[*ptr_num_data_rx - 1U] = (uint8_t)('\0');
-        msg_published = publish_tx(uart_n, (const char*)(ptr_rx_data));
+        msg_published = mqtt_publish_tx(uart_n, (const char*)(ptr_rx_data));
         *ptr_num_data_rx = 0U;
     }
 
@@ -349,7 +365,7 @@ bool InterfaceUART::handle_uart_rx(const uint8_t uart_n)
     else if (*ptr_num_data_rx == DATA_RX_BUFFER_SIZE - 1U)
     {
         ptr_rx_data[DATA_RX_BUFFER_SIZE - 1U] = (uint8_t)('\0');
-        msg_published = publish_tx(uart_n, (const char*)(ptr_rx_data));
+        msg_published = mqtt_publish_tx(uart_n, (const char*)(ptr_rx_data));
         *ptr_num_data_rx = 0U;
     }
 
@@ -357,10 +373,48 @@ bool InterfaceUART::handle_uart_rx(const uint8_t uart_n)
 }
 
 /**
+ * @details This function prepare a JSON string with the current
+ * "msg_status_port_n" UART Port status information and send it.
+ * It also update the "msg_status_port_n" variable to send next UART Port
+ * information the next time this function is call.
+ *
+ * UART Status Information JSON Message Format:
+ * {
+ *     "port":   N, // UART Port Number Status Information
+ *     "enable": N, // UART Port logging disabled/enabled (0/1)
+ *     "bauds":  N, // Configured Baud Rate
+ * }
+ */
+bool InterfaceUART::mqtt_send_uart_status_info()
+{
+    char msg[UART_STATUS_INFO_MSG_LEN];
+
+    // Prepare the Message Payload
+    snprintf(msg, UART_STATUS_INFO_MSG_LEN,
+        "{"
+            "\"port\":%" PRIu8 ","
+            "\"enable\":%d,"
+            "\"bauds\":%" PRIu32
+        "}",
+        msg_status_port_n,
+        (int)(ns_device::ns_uart::uart_cfg[msg_status_port_n].enable),
+        ns_device::ns_uart::uart_cfg[msg_status_port_n].bauds
+    );
+
+    // Update UART Port Number to send info on the status message
+    msg_status_port_n = msg_status_port_n + 1U;
+    if (msg_status_port_n >= ns_const::MAX_NUM_UART)
+    {   msg_status_port_n = 1U;   }
+
+    // Send the Message
+    return MQTT.publish(topic_status, msg);
+}
+
+/**
  * @details Uses the MQTT component to send a received UART message through
  * the UART Rx topic.
  */
-bool InterfaceUART::publish_rx(const uint8_t uart_n, const char* msg)
+bool InterfaceUART::mqtt_publish_rx(const uint8_t uart_n, const char* msg)
 {
     // Do nothing if specified UART Port number is invalid
     if (uart_n >= ns_const::MAX_NUM_UART)
@@ -373,7 +427,7 @@ bool InterfaceUART::publish_rx(const uint8_t uart_n, const char* msg)
  * @details Uses the MQTT component to send a transmitted UART message through
  * the UART Tx topic.
  */
-bool InterfaceUART::publish_tx(const uint8_t uart_n, const char* msg)
+bool InterfaceUART::mqtt_publish_tx(const uint8_t uart_n, const char* msg)
 {
     // Do nothing if specified UART Port number is invalid
     if (uart_n >= ns_const::MAX_NUM_UART)

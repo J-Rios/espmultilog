@@ -67,14 +67,27 @@ class InterfaceUART
     private:
 
         /**
-         * @brief Time to send each MQTT message with UART information.
+         * @brief Time to send each MQTT message with UART Status
+         * information (300ms).
          */
-        static constexpr uint32_t T_SEND_MSG = 1000U;
+        static constexpr uint32_t T_SEND_STATUS_INFO_MS = 300U;
 
         /**
          * @brief Maximum number of characters for MQTT Topic string.
          */
         static constexpr uint8_t MQTT_TOPIC_MAX_LEN = 32U;
+
+        /**
+         * @brief Maximum length for UART Status Information message
+         * that will be send through as MQTT payload.
+         */
+        static constexpr uint16_t UART_STATUS_INFO_MSG_LEN = 50U;
+
+        /**
+         * @brief MQTT Topic to send UARTs status information.
+         * The device publish current UARTs configurations periodically.
+         */
+        static constexpr char MQTT_TOPIC_STATUS[] = "/%s/status/uart";
 
         /**
          * @brief MQTT Topic to configure-enable an UART Port remotely.
@@ -221,13 +234,20 @@ class InterfaceUART
         bool handle_uart_rx(const uint8_t uart_n);
 
         /**
+         * @brief Publish the UART Status informationan MQTT message.
+         * @return true Publish success.
+         * @return false Publish fail.
+         */
+        bool mqtt_send_uart_status_info();
+
+        /**
          * @brief Send an UART Rx message to the component MQTT.
          * @param uart_n UART Port number to publish on it MQTT Topic.
          * @param msg Message payload data to send.
          * @return true Publish success.
          * @return false Publish fail.
          */
-        bool publish_rx(const uint8_t uart_n, const char* msg);
+        bool mqtt_publish_rx(const uint8_t uart_n, const char* msg);
 
         /**
          * @brief Send an UART Tx message to the component MQTT.
@@ -236,7 +256,7 @@ class InterfaceUART
          * @return true Publish success.
          * @return false Publish fail.
          */
-        bool publish_tx(const uint8_t uart_n, const char* msg);
+        bool mqtt_publish_tx(const uint8_t uart_n, const char* msg);
 
     /******************************************************************/
 
@@ -259,6 +279,12 @@ class InterfaceUART
          * @brief Pointers to Serial Ports to use.
          */
         HardwareSerial* SerialPort[ns_const::MAX_NUM_UART];
+
+        /**
+         * @brief MQTT Topic to send UARTs status information.
+         * The device publish current UARTs configurations periodically.
+         */
+        char topic_status[MQTT_TOPIC_MAX_LEN];
 
         /**
          * @brief MQTT Topics to configure-enable an UART Port remotely.
@@ -284,6 +310,18 @@ class InterfaceUART
          * @brief Number of bytes stored in received UART data buffers.
          */
         uint32_t num_data_rx[ns_const::MAX_NUM_UART];
+
+        /**
+         * @brief UART Port Number to send on the UART Status
+         * Information MQTT messages.
+         */
+        uint8_t msg_status_port_n;
+
+        /**
+         * @brief Time instant when last UART Status Information MQTT
+         * message was sent.
+         */
+        uint32_t t_last_status_sent;
 
     /******************************************************************/
 };

@@ -8,7 +8,7 @@
  *
  * ESPMULTILOG MQTT Communication source file.
  *
- * Check Messages:
+ * Check Device General Messages:
  * mosquitto_sub -F '%I\n%t\n%p\n' -h "test.mosquitto.org" -p 1883
  *               -t "/XXXXXXXXXXXX/control/+"
  *
@@ -35,6 +35,10 @@
  * Transmit a message through UART Port N:
  * mosquitto_pub -h "test.mosquitto.org" -p 1883
  *               -t "/XXXXXXXXXXXX/uart/N/tx" -m "the message to send"
+ *
+ * Check for current UARTs configurations (periodically sent by device):
+ * mosquitto_sub -F '%I\n%t\n%p\n' -h "test.mosquitto.org" -p 1883
+ *               -t "/XXXXXXXXXXXX/status/uart"
  *
  * @section LICENSE
  *
