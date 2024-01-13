@@ -103,19 +103,38 @@ char* get_device_uuid()
  * If any string has been copied, the function will return true.
  */
 bool single_str_from_array_of_str(int argc, char* array_str[],
-        char* str_out, const size_t str_out_len)
+        char* str_out, const size_t str_out_size)
 {
-    bool something_appended = false;
+    bool merge_success = false;
+    uint32_t num_bytes_copied = 0U;
 
+    // Check for valid arguments
+    if ( (argc == 0U) || (str_out_size == 0U) )
+    {   return false;   }
+    if ( (array_str == nullptr) || (str_out == nullptr) )
+    {   return false;   }
+
+    // Copy each string
     for (int i = 0; i < argc; i++)
     {
-        const char* str_n = array_str[i];
-        strncat(str_out, str_n, str_out_len);
-        str_out[str_out_len-1U] = '\0';
-        something_appended = true;
+        for (int ii = 0; ii < strlen(array_str[i]); ii++)
+        {
+            // Break if output string is already full
+            if (num_bytes_copied >= str_out_size-1U)
+            {
+                str_out[str_out_size-1U] = '\0';
+                return false;
+            }
+
+            // Copy a byte
+            str_out[num_bytes_copied] = array_str[i][ii];
+            num_bytes_copied = num_bytes_copied + 1U;
+
+            merge_success = true;
+        }
     }
 
-    return something_appended;
+    return merge_success;
 }
 
 /**

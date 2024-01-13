@@ -280,11 +280,7 @@ void MQTTCommunication::handle_msg_rx(const char* topic, char* payload)
         if (strcmp(topic, IfaceUART.get_topic_tx(uart_n)) == 0)
         {
             // Transmit UART Message
-            if (IfaceUART.uart_tx_msg(uart_n, payload))
-            {
-                // Echo the MQTT message to acknowledge transmission
-                publish(topic, payload);
-            }
+            IfaceUART.uart_tx_msg(uart_n, payload);
             return;
         }
     }

@@ -284,6 +284,9 @@ bool InterfaceUART::uart_tx_msg(const uint8_t uart_n, const char* msg)
     // Transmit the message through the UART Port
     SerialPort[uart_n]->write(msg);
 
+    // Publish to MQTT to notify transmission
+    mqtt_publish_tx(uart_n, msg);
+
     return true;
 }
 
@@ -313,6 +316,12 @@ bool InterfaceUART::uart_tx_msg(const uint8_t uart_n, int argc, char* argv[])
     // Transmit the message through the UART Port
     for (int i = 0; i < argc; i++)
     {   SerialPort[uart_n]->write(argv[i]);   }
+
+    // Publish to MQTT to notify transmission
+    char msg_tx[DATA_RX_BUFFER_SIZE];
+    msg_tx[0] = '\0';
+    if (single_str_from_array_of_str(argc, argv, msg_tx, DATA_RX_BUFFER_SIZE))
+    {   mqtt_publish_tx(uart_n, msg_tx);   }
 
     return true;
 }
@@ -357,7 +366,7 @@ bool InterfaceUART::handle_uart_rx(const uint8_t uart_n)
     if (ptr_rx_data[*ptr_num_data_rx - 1U] == '\n')
     {
         ptr_rx_data[*ptr_num_data_rx - 1U] = (uint8_t)('\0');
-        msg_published = mqtt_publish_tx(uart_n, (const char*)(ptr_rx_data));
+        msg_published = mqtt_publish_rx(uart_n, (const char*)(ptr_rx_data));
         *ptr_num_data_rx = 0U;
     }
 
@@ -365,7 +374,7 @@ bool InterfaceUART::handle_uart_rx(const uint8_t uart_n)
     else if (*ptr_num_data_rx == DATA_RX_BUFFER_SIZE - 1U)
     {
         ptr_rx_data[DATA_RX_BUFFER_SIZE - 1U] = (uint8_t)('\0');
-        msg_published = mqtt_publish_tx(uart_n, (const char*)(ptr_rx_data));
+        msg_published = mqtt_publish_rx(uart_n, (const char*)(ptr_rx_data));
         *ptr_num_data_rx = 0U;
     }
 

@@ -85,12 +85,12 @@ extern char* get_device_uuid();
  * @param argc Number of arguments in the array of strings.
  * @param array_str Array of strings to merge.
  * @param str_out Pointer to output single string.
- * @param str_out_len Size of output single string.
+ * @param str_out_size Size of output single string.
  * @return true Something was appended.
  * @return false Nothing was appended.
  */
 extern bool single_str_from_array_of_str(int argc, char* array_str[],
-        char* str_out, const size_t str_out_len);
+        char* str_out, const size_t str_out_size);
 /**
  * @brief Parse a string into a "s_str_cmd_args" structure to handle it
  * as a command+arguments.
