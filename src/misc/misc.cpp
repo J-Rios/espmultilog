@@ -95,6 +95,30 @@ char* get_device_uuid()
 }
 
 /**
+ * @details This function iterate over each string of the array of strings and
+ * concatenate that string into the user provided "str_out" string, then an
+ * end of string null character is added at the end of the out string to safe
+ * ensure the out string will be closed.
+ * In case the
+ * If any string has been copied, the function will return true.
+ */
+bool single_str_from_array_of_str(int argc, char* array_str[],
+        char* str_out, const size_t str_out_len)
+{
+    bool something_appended = false;
+
+    for (int i = 0; i < argc; i++)
+    {
+        const char* str_n = array_str[i];
+        strncat(str_out, str_n, str_out_len);
+        str_out[str_out_len-1U] = '\0';
+        something_appended = true;
+    }
+
+    return something_appended;
+}
+
+/**
  * @details This function count the number of words in the provided "str_in"
  * string, store it in the provided "s_str_cmd_args->argc", then use it to
  * loop searching for a space character using a pointer in order to find the
