@@ -342,7 +342,15 @@ bool MQTTCommunication::connect()
     t0 = 0U;
     Serial.println("MQTT Connected\n");
     publish(topic_output, "Device connected");
+
+    // MQTT Subscriptions
     subscribe(topic_input);
+    for (uint8_t uart_n = 0U; uart_n < ns_const::MAX_NUM_UART; uart_n++)
+    {
+        subscribe(IfaceUART.get_topic_cfg(uart_n));
+        subscribe(IfaceUART.get_topic_tx(uart_n));
+    }
+
 
     return is_connected();
 }
