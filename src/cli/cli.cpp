@@ -56,6 +56,14 @@
 // Constant Data
 #include "constants.h"
 
+// Device Interfaces
+#include "../interfaces/adc/iface_adc.h"
+#include "../interfaces/can/iface_can.h"
+#include "../interfaces/dio/iface_dio.h"
+#include "../interfaces/i2c/iface_i2c.h"
+#include "../interfaces/spi/iface_spi.h"
+#include "../interfaces/uart/iface_uart.h"
+
 // Miscellaneous Library
 #include "../misc/misc.h"
 
@@ -82,6 +90,10 @@ MINBASECLI Cli;
 static void cmd_wifi_status(MINBASECLI* Cli, int argc, char* argv[]);
 static void cmd_reboot(MINBASECLI* Cli, int argc, char* argv[]);
 static void cmd_version(MINBASECLI* Cli, int argc, char* argv[]);
+static void cmd_uart(MINBASECLI* Cli, int argc, char* argv[]);
+
+// Common Functions
+static void show_invalid_cmd(MINBASECLI* Cli);
 
 /*****************************************************************************/
 
@@ -103,6 +115,7 @@ void CommandLineInterface::init()
     Cli.add_cmd("wifi_status", &cmd_wifi_status, "Show current wifi info.");
     Cli.add_cmd("reboot", &cmd_reboot, "Reboot the system.");
     Cli.add_cmd("version", &cmd_version, "Shows current frimware version.");
+    Cli.add_cmd("uart", &cmd_uart, "Setup and Control an UART Port.");
 
     Cli.printf("\nCommand Line Interface is ready\n\n");
 }
@@ -184,6 +197,67 @@ static void cmd_version(MINBASECLI* Cli, int argc, char* argv[])
         (int)(ns_const::FW_APP_VERSION_X),
         (int)(ns_const::FW_APP_VERSION_Y),
         (int)(ns_const::FW_APP_VERSION_Z));
+}
+
+/*****************************************************************************/
+
+/* UART Interface */
+
+/**
+ * @details UART configuration command.
+ *
+ * Expected commands format:
+ *   uart N command [arg1] [arg2] ...
+ *
+ * Configure UART Port 1 for 9600 bauds:
+ *   uart 1 config bauds 9600
+ * Configure UART Port 1 for 9600 bauds:
+ *   uart 1 config bauds 9600
+ *
+ * Enable Logging on UART Port 1:
+ *   uart 1 config enable
+ *
+ * Disable Logging on UART Port 1:
+ *   uart 1 config disable
+ */
+static void cmd_uart(MINBASECLI* Cli, int argc, char* argv[])
+{
+    // Ignore if command has less than 2 arguments (N config_command)
+    if (argc < 3U)
+    {   show_invalid_cmd(Cli); return;   }
+
+    // Remove UART Port Number and command from arguments count
+    argc = argc - 2;
+
+    // Try to convert first argument from string to u32
+    // (expected to be the UART Port Number)
+    uint8_t uart_n = ns_const::MAX_NUM_UART;
+    t_return_code convert_rc = safe_atoi_u8(argv[0], sizeof(argv[0]), &uart_n);
+    if (convert_rc != t_return_code::RC_OK)
+    {   show_invalid_cmd(Cli); return;   }
+    if (uart_n >= ns_const::MAX_NUM_UART)
+    {   show_invalid_cmd(Cli); return;   }
+
+    // UART Port Configuration
+    if (strcmp(argv[1], "config") == 0)
+    {
+        if (IfaceUART.configure(uart_n, argc, &(argv[2])) == false)
+        {   show_invalid_cmd(Cli); return;   }
+    }
+}
+
+/*****************************************************************************/
+
+/* Common Functions */
+
+/**
+ * @details This function just show a message through the CLI to notify
+ * that the last command that was provided by the user is unknown or has
+ * an invalid sintax.
+ */
+static void show_invalid_cmd(MINBASECLI* Cli)
+{
+    Cli->printf("  Invalid Command\n");
 }
 
 /*****************************************************************************/

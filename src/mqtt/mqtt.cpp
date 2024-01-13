@@ -250,15 +250,27 @@ bool MQTTCommunication::subscribe(const char* topic)
 
 void MQTTCommunication::handle_msg_rx(const char* topic, char* payload)
 {
-    // Topic Device Control Input ("/DEVICEID/control/in")
+    using namespace ns_misc;
+
+    // Topic Device Control Input ("/XXXXXXXXXXXX/control/in")
     if (strcmp(topic, topic_input) == 0)
     {   msg_rx_in(topic, payload);   }
 
-    // Topic UART Port Configuration
+    // Topic UART Port Configuration ("/XXXXXXXXXXXX/uart/N/cfg")
     for (uint8_t uart_n = 0U; uart_n < ns_const::MAX_NUM_UART; uart_n++)
     {
         if (strcmp(topic, IfaceUART.get_topic_cfg(uart_n)) == 0)
-        {   IfaceUART.configure(uart_n, payload);   }
+        {
+            // Parse string to get handle it as commad+arguments
+            str_parse_cmd_args(payload, &cmd_args);
+            if (cmd_args.argc == 0U)
+            {   return;   }
+
+            // UART Configuration
+            IfaceUART.configure(uart_n, cmd_args.argc,
+                (char**)(cmd_args.argv));
+            break;
+        }
     }
 }
 

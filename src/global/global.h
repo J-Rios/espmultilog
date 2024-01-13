@@ -141,7 +141,7 @@ namespace ns_misc
     {
         char cmd[ns_const::MAX_STR_CMD_ARG_LEN];
         char argv[ns_const::MAX_STR_ARGV][ns_const::MAX_STR_CMD_ARG_LEN];
-        uint8_t argc;
+        int argc;
     };
 
     /**

@@ -142,44 +142,44 @@ const char* InterfaceUART::get_topic_cfg(const uint8_t uart_n)
  * @details Check type of configuration command string was requested by the
  * "data" argument, then call to the corresponding configuration method.
  */
-bool InterfaceUART::configure(const uint8_t uart_n, char* data)
+bool InterfaceUART::configure(const uint8_t uart_n, int argc, char* argv[])
 {
-    using namespace ns_misc;
-
     bool cfg_success = false;
 
-    // Parse string to get handle it as commad+arguments
-    str_parse_cmd_args(data, &cmd_args);
-    if (cmd_args.argc == 0U)
+    // Do nothing if not enough number of arguments provided
+    if (argc == 0U)
     {   return false;   }
 
+    // Point to configuration command and argument
+    char* cmd = argv[0];
+    char* arg = argv[1];
+
     // UART Port Logging Enable
-    if (strcmp(cmd_args.cmd, "enable") == 0)
+    if (strcmp(cmd, "enable") == 0)
     {   cfg_success = uart_enable(uart_n, true);   }
 
     // UART Port Logging Disable
-    else if (strcmp(cmd_args.cmd, "disable") == 0)
+    else if (strcmp(cmd, "disable") == 0)
     {   cfg_success = uart_enable(uart_n, false);   }
 
     // UART Port Configure Baudrate
-    else if (strcmp(cmd_args.cmd, "bauds ") == 0)
+    else if (strcmp(cmd, "bauds ") == 0)
     {
         // Try to convert baudrate argument string to u32
         uint32_t bauds = ns_const::DEFAULT_UART_BAUD_RATE;
-        t_return_code conversion_result = safe_atoi_u32(
-            cmd_args.argv[0], sizeof(cmd_args.argv[0]), &bauds);
-        if (conversion_result != t_return_code::RC_OK)
+        t_return_code convert_rc = safe_atoi_u32(arg, sizeof(arg), &bauds);
+        if (convert_rc != t_return_code::RC_OK)
         {   return false;   }
 
         cfg_success = uart_config_speed(uart_n, bauds);
     }
 
     // UART Port Configure mode of data raw_byte/string handling
-    else if (strcmp(cmd_args.cmd, "mode") == 0)
+    else if (strcmp(cmd, "mode") == 0)
     {
-        if (strcmp(cmd_args.argv[0], "raw") == 0)
+        if (strcmp(arg, "raw") == 0)
         {   cfg_success = uart_config_mode_bytes(uart_n, true);   }
-        else if (strcmp(cmd_args.argv[0], "string") == 0)
+        else if (strcmp(arg, "string") == 0)
         {   cfg_success = uart_config_mode_bytes(uart_n, false);   }
         else
         {   return false;   }

@@ -149,11 +149,12 @@ class InterfaceUART
         /**
          * @brief Configure an UART Port.
          * @param uart_n UART Port number to configure.
-         * @param data Configuration data string command.
+         * @param argc Number of configuration data arguments.
+         * @param argv Array of configuration data arguments strings.
          * @return true Configuration success.
          * @return false Configuration fail.
          */
-        bool configure(const uint8_t uart_n, char* data);
+        bool configure(const uint8_t uart_n, int argc, char* argv[]);
 
         /**
          * @brief Configure the Baud Rate of an UART Port.
