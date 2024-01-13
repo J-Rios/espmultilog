@@ -139,6 +139,19 @@ const char* InterfaceUART::get_topic_cfg(const uint8_t uart_n)
 }
 
 /**
+ * @details Getter method to return any of the internal MQTT UART Transmission
+ * topic attribute.
+ */
+const char* InterfaceUART::get_topic_tx(const uint8_t uart_n)
+{
+    // Do nothing if specified UART Port number is invalid
+    if (uart_n >= ns_const::MAX_NUM_UART)
+    {   return nullptr;   }
+
+    return topic_tx[uart_n];
+}
+
+/**
  * @details Check type of configuration command string was requested by the
  * "data" argument, then call to the corresponding configuration method.
  */
@@ -288,14 +301,45 @@ bool InterfaceUART::uart_tx_msg(const uint8_t uart_n, const char* msg)
     if (ns_device::ns_uart::uart_cfg[uart_n].enable == false)
     {   return false;   }
 
-    // Echo the message to Tx trhrough MQTT to acknowledge transmission
-    publish_tx(uart_n, msg);
-
     // Transmit the message through the UART Port
     if (ns_device::ns_uart::uart_cfg[uart_n].mode_raw_bytes)
     {   SerialPort[uart_n]->print(msg);   }
     else
     {   SerialPort[uart_n]->println(msg);   }
+
+    return true;
+}
+
+/**
+ * @details This function checks that the provided UART Port number is valid
+ * and has been enabled, then it send each of the messages from the provided
+ * argument list through the UART port, and at the end, echoe the message to Transmitt by the UART
+ * trhrough the MQTT Tx topic to acknowledge it transmission, at the end, if
+ * the operation mode is not raw, an end of line is also send.
+ */
+bool InterfaceUART::uart_tx_msg(const uint8_t uart_n, int argc, char* argv[])
+{
+    // Do nothing if component was not initialized
+    if (initialized == false)
+    {   return false;   }
+
+    // Do nothing for UART0 that is used as device CLI
+    if (uart_n == 0U)
+    {   return false;   }
+
+    // Do nothing if specified UART Port number is invalid
+    if (uart_n >= ns_const::MAX_NUM_UART)
+    {   return false;   }
+
+    // Do nothing if the UART Port was not enabled
+    if (ns_device::ns_uart::uart_cfg[uart_n].enable == false)
+    {   return false;   }
+
+    // Transmit the message through the UART Port
+    for (int i = 0; i < argc; i++)
+    {   SerialPort[uart_n]->print(argv[i]);   }
+    if (ns_device::ns_uart::uart_cfg[uart_n].mode_raw_bytes == false)
+    {   SerialPort[uart_n]->println("");   }
 
     return true;
 }

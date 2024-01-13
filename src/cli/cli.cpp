@@ -219,6 +219,9 @@ static void cmd_version(MINBASECLI* Cli, int argc, char* argv[])
  *
  * Disable Logging on UART Port 1:
  *   uart 1 config disable
+ *
+ * Transmit a message through the UART Port 1:
+ *   uart 1 tx message to be send
  */
 static void cmd_uart(MINBASECLI* Cli, int argc, char* argv[])
 {
@@ -243,6 +246,16 @@ static void cmd_uart(MINBASECLI* Cli, int argc, char* argv[])
     {
         if (IfaceUART.configure(uart_n, argc, &(argv[2])) == false)
         {   show_invalid_cmd(Cli); return;   }
+    }
+
+    // Transmit UART message
+    if (strcmp(argv[1], "tx") == 0)
+    {
+        if (IfaceUART.uart_tx_msg(uart_n, argc, &(argv[2])) == false)
+        {   Cli->printf("Tx Fail\n");   }
+        else
+        {   Cli->printf("Tx ok\n");   }
+        return;
     }
 }
 

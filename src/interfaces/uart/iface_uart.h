@@ -142,9 +142,17 @@ class InterfaceUART
          * @brief Get the MQTT UART Configuration topic for specified
          * Port.
          * @param uart_n UART Port number topic to get.
-         * @return char* Address of internal topic attribute.
+         * @return char* String address of internal topic attribute.
          */
         const char* get_topic_cfg(const uint8_t uart_n);
+
+        /**
+         * @brief Get the MQTT UART Transmission topic for specified
+         * Port.
+         * @param uart_n UART Port number topic to get.
+         * @return char* String address of internal topic attribute.
+         */
+        const char* get_topic_tx(const uint8_t uart_n);
 
         /**
          * @brief Configure an UART Port.
@@ -188,14 +196,24 @@ class InterfaceUART
         /**
          * @brief Transmit a message through the specified UART Port.
          * The UART Port must be already configured-enabled.
-         * The message is also echoed through MQTT Tx topic to
-         * acknowledge it transmission.
          * @param uart_n UART Port number to Transmit the message.
          * @param msg Message data to be transmitted.
          * @return true Transmission success.
          * @return false Transmission fail.
          */
         bool uart_tx_msg(const uint8_t uart_n, const char* msg);
+
+        /**
+         * @brief Transmit multiple messages through the specified UART
+         * Port.
+         * The UART Port must be already configured-enabled.
+         * @param uart_n UART Port number to Transmit the messages.
+         * @param argc Number of messages to be transmitted.
+         * @param argv List of messages to be transmitted.
+         * @return true Transmission success.
+         * @return false Transmission fail.
+         */
+        bool uart_tx_msg(const uint8_t uart_n, int argc, char* argv[]);
 
     /******************************************************************/
 

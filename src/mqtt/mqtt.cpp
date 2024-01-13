@@ -20,25 +20,29 @@
  * mosquitto_pub -h "test.mosquitto.org" -p 1883
  *               -t "/XXXXXXXXXXXX/control/in" -m "reboot"
  *
- * Configure UART Port 1 speed to 9600 bauds:
+ * Configure UART Port N speed to 9600 bauds:
  * mosquitto_pub -h "test.mosquitto.org" -p 1883
  *               -t "/XXXXXXXXXXXX/uart/N/cfg" -m "bauds 9600"
  *
- * Configure UART Port 1 data handling mode for RAW Bytes:
+ * Configure UART Port N data handling mode for RAW Bytes:
  * mosquitto_pub -h "test.mosquitto.org" -p 1883
  *               -t "/XXXXXXXXXXXX/uart/N/cfg" -m "mode raw"
  *
- * Configure UART Port 1 data handling mode for String:
+ * Configure UART Port N data handling mode for String:
  * mosquitto_pub -h "test.mosquitto.org" -p 1883
  *               -t "/XXXXXXXXXXXX/uart/N/cfg" -m "mode string"
  *
- * Enable Logging of UART Port 1:
+ * Enable Logging of UART Port N:
  * mosquitto_pub -h "test.mosquitto.org" -p 1883
  *               -t "/XXXXXXXXXXXX/uart/N/cfg" -m "enable"
  *
- * Disable Logging of UART Port 1:
+ * Disable Logging of UART Port N:
  * mosquitto_pub -h "test.mosquitto.org" -p 1883
  *               -t "/XXXXXXXXXXXX/uart/N/cfg" -m "disable"
+ *
+ * Transmit a message through UART Port N:
+ * mosquitto_pub -h "test.mosquitto.org" -p 1883
+ *               -t "/XXXXXXXXXXXX/uart/N/tx" -m "the message to send"
  *
  * @section LICENSE
  *
@@ -254,11 +258,15 @@ void MQTTCommunication::handle_msg_rx(const char* topic, char* payload)
 
     // Topic Device Control Input ("/XXXXXXXXXXXX/control/in")
     if (strcmp(topic, topic_input) == 0)
-    {   msg_rx_in(topic, payload);   }
+    {
+        msg_rx_in(topic, payload);
+        return;
+    }
 
-    // Topic UART Port Configuration ("/XXXXXXXXXXXX/uart/N/cfg")
+    // Topics for UART Management
     for (uint8_t uart_n = 0U; uart_n < ns_const::MAX_NUM_UART; uart_n++)
     {
+        // Topic UART Port Configuration ("/XXXXXXXXXXXX/uart/N/cfg")
         if (strcmp(topic, IfaceUART.get_topic_cfg(uart_n)) == 0)
         {
             // Parse string to get handle it as commad+arguments
@@ -269,7 +277,19 @@ void MQTTCommunication::handle_msg_rx(const char* topic, char* payload)
             // UART Configuration
             IfaceUART.configure(uart_n, cmd_args.argc,
                 (char**)(cmd_args.argv));
-            break;
+            return;
+        }
+
+        // Topic UART Port Transmission ("/XXXXXXXXXXXX/uart/N/tx")
+        if (strcmp(topic, IfaceUART.get_topic_tx(uart_n)) == 0)
+        {
+            // Transmit UART Message
+            if (IfaceUART.uart_tx_msg(uart_n, payload))
+            {
+                // Echo the MQTT message to acknowledge transmission
+                publish(topic, payload);
+            }
+            return;
         }
     }
 }
