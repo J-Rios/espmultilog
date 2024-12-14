@@ -114,7 +114,7 @@ void CommandLineInterface::init()
     // Add commands and bind callbacks to them
     Cli.add_cmd("wifi_status", &cmd_wifi_status, "Show current wifi info.");
     Cli.add_cmd("reboot", &cmd_reboot, "Reboot the system.");
-    Cli.add_cmd("version", &cmd_version, "Shows current frimware version.");
+    Cli.add_cmd("version", &cmd_version, "Shows current firmware version.");
     Cli.add_cmd("uart", &cmd_uart, "Setup and Control an UART Port.");
 
     Cli.printf("\nCommand Line Interface is ready\n\n");

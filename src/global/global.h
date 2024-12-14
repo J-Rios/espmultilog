@@ -89,10 +89,10 @@ namespace ns_device
             #endif
 
             // Default struct initialization
-            s_uart_config()
+            s_uart_config() :
+                enable(false),
+                bauds(ns_const::DEFAULT_UART_BAUD_RATE)
             {
-                enable = false;
-                bauds = ns_const::DEFAULT_UART_BAUD_RATE;
             #if 0 /* Full parameters configuration is not supported */
                 config.data_bits = UART_DATA_8_BITS;
                 config.stop_bits = UART_STOP_BITS_1;

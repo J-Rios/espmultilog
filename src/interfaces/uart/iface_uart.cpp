@@ -73,9 +73,10 @@ InterfaceUART IfaceUART;
 InterfaceUART::InterfaceUART()
 {
     initialized = false;
+    memset((void*)(topic_status), 0, ns_const::MQTT_TOPIC_MAX_LEN);
     for (uint8_t i = 0U; i < ns_const::MAX_NUM_UART; i++)
     {
-        SerialPort[i] == nullptr;
+        SerialPort[i] = nullptr;
         memset((void*)(topic_cfg[i]), 0, ns_const::MQTT_TOPIC_MAX_LEN);
         memset((void*)(topic_rx[i]), 0, ns_const::MQTT_TOPIC_MAX_LEN);
         memset((void*)(topic_tx[i]), 0, ns_const::MQTT_TOPIC_MAX_LEN);

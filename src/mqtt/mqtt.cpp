@@ -143,6 +143,8 @@ MQTTCommunication::MQTTCommunication()
     is_initialized = false;
     WIFIClient = nullptr;
     MQTTClient = nullptr;
+    memset((void*)(topic_input), 0, ns_const::MQTT_TOPIC_MAX_LEN);
+    memset((void*)(topic_output), 0, ns_const::MQTT_TOPIC_MAX_LEN);
 }
 
 MQTTCommunication::~MQTTCommunication()
@@ -288,6 +290,10 @@ void MQTTCommunication::handle_msg_rx(const char* topic, char* payload)
 
 void MQTTCommunication::msg_rx_in(const char* topic, char* payload)
 {
+    // Check if argument values are valid
+    if ( (topic == nullptr) || (payload == nullptr) )
+    {   return;   }
+
     // Request Device Reboot
     if (strcmp(payload, "reboot") == 0)
     {
