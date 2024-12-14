@@ -95,7 +95,9 @@ InterfaceUART::InterfaceUART()
 void InterfaceUART::init(const char* device_uuid)
 {
     // Assign Serial Port Objects
-    SerialPort[0] = &Serial;
+    #if !defined(CONFIG_IDF_TARGET_ESP32S3)
+        SerialPort[0] = &Serial;
+    #endif
     #if SOC_UART_NUM > 1
         SerialPort[1] = &Serial1;
     #endif
