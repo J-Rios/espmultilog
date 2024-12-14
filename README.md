@@ -4,22 +4,24 @@ ESP32 based device to remote log different kind of data interfaces like DIO, ADC
 
 An Espmultilog device will monitorize the different interfaces availables on the ESP32 controller and forward the information of these interfaces through a MQTT connection in order to share and allow access to it remotely.
 
-This opens the door to develop and use of high level software tools or REST APIs to monitorize or control the device status.
+This opens the door to develop and use of high level software tools or REST APIs to monitorize or control these device interfaces.
 
 ## Device Setup
 
-Once the device startup for the first time, it requires internet connection so a Commisionning procedure through WiFi must be followed by the user in order to setup the WiFi network credentials into the device.
+The device requires a network connection to a MQTT server, so the first time the device is powered, a **Commisionning** procedure through WiFi must be followed by the user in order to setup the WiFi network credentials into the device.
 
-The device uses WiFi Manager to handle this procedure, at startup it try to connect to the last configured WiFi network but in case there is no connection configured or the connection fails, the device will launch a WiFi Access Point (AP) to allow the user connect into it and access to the Commisioning Web Server for device configuration.
+The device uses **WiFi Manager** to handle this procedure, at startup it tries to connect to the last configured WiFi network but in case there is no connection configured or the connection fails, the device will launch a WiFi Access Point (AP) to allow the user connect into it and access to the Commisioning Web Server for device configuration.
 
 The device WiFi AP that will be triggered by default will be something like the follow:
 
-AP SSID: epmultilog_XXXXXXXXXXXX (the "XXXXXXXXXXXX" is the unique device MAC Address)
-AP Password: espmultilog1234
+- **AP SSID:** epmultilog_XXXXXXXXXXXX
+- **AP Password:** espmultilog1234
+
+Note: The "XXXXXXXXXXXX" is the device MAC Address.
 
 To setup the device, the user must connect to this WiFi AP with any device (i.e. PC, Smartphone, etc.), then use a web browser and access to the device configuration web page by accessing the address "192.168.4.1". Once the page is available, provide your network WiFi connection credentials to the device in order to make the device store this information and connect to it for the standard operation.
 
-A device that has been setup, will use the configured credentials to connect and use that WiFi network in the future (after any device reboot), so there is no need to do this setup again (or do it again in case you want to modify the WiFi network were the device should connect, for example if you plan to move the device to a different location and use a different network).
+A device that has been setup, will use the configured credentials to connect and use that WiFi network in the future (after any device reboot), so there is no need to do this setup again (only in case you want to modify the WiFi network were the device should connect, for example if you plan to move the device to a different location and use a different network).
 
 ## Device Command Line Interface
 
@@ -33,6 +35,24 @@ The default CLI configuration is:
 - none parity
 - 115200 bauds
 - All end of lines supported (CR, LF and CRLF).
+
+### Device setup through CLI
+
+These are the available commands that you can use in the CLI:
+
+```bash
+# Reboot the device
+reboot
+
+# Show device current firmware version
+version
+
+# Show Current WiFi Connection Information
+wifi_status
+
+# Setup and Control logging of an UART Port
+uart N command [arg1] [arg2]
+```
 
 ## Interface Support Status
 
@@ -50,7 +70,7 @@ Here is the list of current supported interfaces:
 
 The project has been tested and validated on the next ESP32 devices (could work on other ESP32 devices but has not been tested yet):
 
-- [ ] ESP32.
+- [x] ESP32.
 - [ ] ESP32-C2.
 - [ ] ESP32-C3.
 - [ ] ESP32-C6.
@@ -90,38 +110,45 @@ Notes:
 - The **"N"** is a number ("1" or "2") to target the device UART Port to configure/log/control.
 - If UART speed is not configured, by default the device will use 115200 bauds on all the Ports.
 
+### UART/USART Interface Setup example
+
 For example, the procedure to configure and enable the logging of the UART Port 1 on a device with a MAC address 12:34:56:78:90:AB, is as follows:
 
 1. Power-up the device and wait until it is connected to the MQTT Server.
 
 2. Subscribe to device UART configuration MQTT topic to check acknowledge from the device to the future requests:
-```bash
-mosquitto_sub -F '%I\n%t\n%p\n' -h "test.mosquitto.org" -p 1883 -t "/1234567890AB/uart/#"
-```
 
-1. Send a MQTT message to setup UART port 1 communication speed to 9600 bauds:
+    ```bash
+    mosquitto_sub -F '%I\n%t\n%p\n' -h "test.mosquitto.org" -p 1883 -t "/1234567890AB/uart/#"
+    ```
 
-```bash
-mosquitto_pub -h "test.mosquitto.org" -p 1883 -t "/1234567890AB/uart/1/cfg" -m "bauds 9600"
-```
+3. Send a MQTT message to setup UART port 1 communication speed to 9600 bauds:
+
+    ```bash
+    mosquitto_pub -h "test.mosquitto.org" -p 1883 -t "/1234567890AB/uart/1/cfg" -m "bauds 9600"
+    ```
 
 4. Check for device acknowledge response in the same topic with *"bauds ok"* to be sure it was set properly.
 
 5. Send a MQTT message to enable logging on UART Port 1:
 
-```bash
-mosquitto_pub -h "test.mosquitto.org" -p 1883 -t "/1234567890AB/uart/1/cfg" -m "enable"
-```
+    ```bash
+    mosquitto_pub -h "test.mosquitto.org" -p 1883 -t "/1234567890AB/uart/1/cfg" -m "enable"
+    ```
 
 6. Check for device acknowledge response in the same topic with *"enabled"* to be sure it was set properly.
+
+7. Subscribe to receive UART logging:
+
+    ```bash
+    mosquitto_sub -h "test.mosquitto.org" -p 1883 -t "/1234567890AB/uart/1/rx"
+    ```
 
 Note that you can modify the speed at any time without the need of disabling the port. Also, you can disable an UART port by:
 
 ```bash
 mosquitto_pub -h "test.mosquitto.org" -p 1883 -t "/1234567890AB/uart/1/cfg" -m "disable"
 ```
-
-### UART Interface Log Setu For UART configuration
 
 ## SPI Interface
 
